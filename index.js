@@ -1,7 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
+import userRoutes from "./routes/user.route.js";
+import courseRoutes from "./routes/course.route.js";
 dotenv.config();
 
 const app = express();
@@ -9,8 +10,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-import userRoutes from "./routes/user.route.js";
 app.use("/api/users", userRoutes);
+app.use("/api/courses", courseRoutes);
 
 app.get("/", (req, res) => {
   res.json("Server is running");

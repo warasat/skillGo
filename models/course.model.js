@@ -3,6 +3,11 @@ import mongoose from "mongoose";
 const { Schema, model, Types } = mongoose;
 
 const courseSchema = new Schema({
+  user_id: {
+    type: Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   category_id: {
     type: Types.ObjectId,
     ref: "Category",
@@ -18,17 +23,17 @@ const courseSchema = new Schema({
     required: true,
     trim: true,
   },
-  price: {
-    type: Number,
+  paidStatus: {
+    type: Boolean,
     required: true,
-    min: 0,
+    default: false,
   },
-  final_exam_id: {
-    type: Types.ObjectId,
-    ref: "FinalExam",
-    required: true,
-    unique: true,
-  },
+  // final_exam_id: {
+  //   type: Types.ObjectId,
+  //   ref: "FinalExam",
+  //   unique: true,
+  //   required: false,
+  // },
 });
 
 export default model("Course", courseSchema);
