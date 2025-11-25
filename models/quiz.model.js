@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 
 const quizSchema = new Schema({
-  module_id: {
-    type: Schema.Types.ObjectId,
-    ref: "Module",
+  lesson_id: {
+    type: Types.ObjectId,
+    ref: "Lesson",
     required: true,
   },
   title: {
