@@ -28,6 +28,19 @@ const courseSchema = new Schema({
     required: true,
     default: false,
   },
+  amount: {
+    type: Number,
+    validate: {
+      validator: function (value) {
+        if (this.paidStatus) {
+          return value != null && value > 0;
+        }
+
+        return value == null || value === 0;
+      },
+      message: "Amount must be greater than 0 when paidStatus is true.",
+    },
+  },
   // final_exam_id: {
   //   type: Types.ObjectId,
   //   ref: "FinalExam",

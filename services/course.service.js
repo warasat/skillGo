@@ -2,16 +2,22 @@ import constants from "../constants/constants.js";
 import Course from "../models/course.model.js";
 
 class CourseService {
-  //Create Course
+  // Create Course
   async createCourse(userId, roleIdentifier, courseData) {
     try {
       if (roleIdentifier != constants.ROLES.INSTRUCTOR) {
         throw new Error("Only instructors can create courses");
       }
 
-      const { category_id, title, description, paidStatus } = courseData;
+      const { category_id, title, description, paidStatus, amount } =
+        courseData;
+
       if (!category_id || !title || !description || paidStatus === undefined) {
         throw new Error("All course fields must be provided");
+      }
+
+      if (paidStatus && (!amount || amount <= 0)) {
+        throw new Error("Amount must be greater than 0 for paid courses");
       }
 
       const course = await Course.create({
@@ -20,6 +26,7 @@ class CourseService {
         title,
         description,
         paidStatus,
+        amount: paidStatus ? amount : 0,
       });
 
       return { success: true, course };
@@ -27,17 +34,32 @@ class CourseService {
       throw error;
     }
   }
-  //update Course
+
+  // Update Course
   async updateCourse(courseId, userId, roleIdentifier, updateData) {
     try {
-      if (roleIdentifier !== 2) {
+      if (roleIdentifier !== constants.ROLES.INSTRUCTOR) {
         throw new Error("Only instructors can update courses");
       }
+
       const course = await Course.findOne({ _id: courseId, user_id: userId });
       if (!course) {
         throw new Error(
           "Course not found or you are not authorized to update it"
         );
+      }
+
+      if (
+        updateData.paidStatus === true &&
+        (!updateData.amount || updateData.amount <= 0)
+      ) {
+        throw new Error(
+          "Amount must be greater than 0 when setting paidStatus to true"
+        );
+      }
+
+      if (updateData.paidStatus === false) {
+        updateData.amount = 0;
       }
 
       Object.assign(course, updateData);
@@ -48,10 +70,11 @@ class CourseService {
       throw error;
     }
   }
+
   // Delete Course
   async deleteCourse(courseId, userId, roleIdentifier) {
     try {
-      if (roleIdentifier !== 2) {
+      if (roleIdentifier !== constants.ROLES.INSTRUCTOR) {
         throw new Error("Only instructors can delete courses");
       }
 
@@ -70,13 +93,19 @@ class CourseService {
       throw error;
     }
   }
+
   // Get All Courses
   async getAllCourses() {
-    return await Course.find().populate("user_id", "nameemail");
+    return await Course.find()
+      .populate("user_id", "name email")
+      .populate("category_id", "name");
   }
+
   // Get Course By ID
   async getCourseById(courseId) {
-    return await Course.findById(courseId).populate("user_id", "name email");
+    return await Course.findById(courseId)
+      .populate("user_id", "name email")
+      .populate("category_id", "name");
   }
 }
 

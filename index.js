@@ -6,6 +6,10 @@ import courseRoutes from "./routes/course.route.js";
 import enrollmentRoutes from "./routes/enrollment.route.js";
 import moduleRoutes from "./routes/module.route.js";
 import lessonRoutes from "./routes/lesson.route.js";
+import quizRoutes from "./routes/quiz.route.js";
+import reviewRoutes from "./routes/review.route.js";
+import commentsRoutes from "./routes/comment.route.js";
+
 dotenv.config();
 
 const app = express();
@@ -18,6 +22,9 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/enrollments", enrollmentRoutes);
 app.use("/api/modules", moduleRoutes);
 app.use("/api/lessons", lessonRoutes);
+app.use("/api/quizzes", quizRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/comments", commentsRoutes);
 
 app.get("/", (req, res) => {
   res.json("Server is running");
