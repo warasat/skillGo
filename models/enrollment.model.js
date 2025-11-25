@@ -16,7 +16,16 @@ const enrollmentSchema = new Schema({
   payment_id: {
     type: Types.ObjectId,
     ref: "Payment",
-    required: false,
+    default: null,
+  },
+  status: {
+    type: String,
+    enum: ["enrolled", "completed", "dropped"],
+    default: "enrolled",
+  },
+  enrolledAt: {
+    type: Date,
+    default: Date.now,
   },
 });
 
