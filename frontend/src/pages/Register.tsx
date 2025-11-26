@@ -27,9 +27,8 @@ const Register = () => {
       };
       const res = await register(payload);
       setResponse(res.data);
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
+
+      window.location.href = "/login";
     } catch (err) {
       console.error("Registration error:", err);
       const errorMessage = ``;
@@ -112,7 +111,6 @@ const Register = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={loading}
             >
-              <option value={1}>Admin</option>
               <option value={2}>Instructor</option>
               <option value={3}>Learner</option>
             </select>

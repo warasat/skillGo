@@ -9,3 +9,8 @@ export const setTokenInLocalStorage = (token: any) => {
 export const getTokenFromLocalStorage = () => {
   return localStorage.getItem(CONSTANTS.token_key.name);
 };
+
+// create a method to remove token from local storage
+export const removeTokenFromLocalStorage = () => {
+  return localStorage.removeItem(CONSTANTS.token_key.name);
+};

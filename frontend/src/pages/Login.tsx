@@ -29,6 +29,7 @@ const Login = () => {
 
       const token = res.data.data.token;
       setTokenInLocalStorage(token);
+      window.location.href = "/portal";
     } catch (err) {
       console.error("Login error:", err);
       const errorMessage = err instanceof Error ? err.message : "Login failed";
