@@ -94,6 +94,28 @@ router.get("/get-course", authMiddleware(), async (req, res) => {
     });
   }
 });
+// Get only Instructor's Courses
+router.get("/instructor-courses", authMiddleware([2]), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const roleIdentifier = req.user.roleIdentifier;
+
+    const courses = await CourseService.getInstructorCourses(
+      userId,
+      roleIdentifier
+    );
+
+    res.status(200).json({
+      success: true,
+      data: courses,
+    });
+  } catch (error) {
+    res.status(403).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 // Get Course by ID route
 router.get("/:id", authMiddleware(), async (req, res) => {
   try {

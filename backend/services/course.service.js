@@ -107,6 +107,22 @@ class CourseService {
       .populate("user_id", "name email")
       .populate("category_id", "name");
   }
+  // Get only Instructor_Course
+  async getInstructorCourses(userId, roleIdentifier) {
+    try {
+      if (roleIdentifier !== constants.ROLES.INSTRUCTOR) {
+        throw new Error("Only instructors can view their courses");
+      }
+
+      const courses = await Course.find({ user_id: userId })
+        .populate("user_id", "name email")
+        .populate("category_id", "name");
+
+      return courses;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new CourseService();

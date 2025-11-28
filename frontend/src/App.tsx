@@ -7,9 +7,11 @@ import Profile from "./pages/Profile";
 import Setting from "./pages/Setting";
 import GetCourses from "./pages/getCourses";
 import MyCourses from "./pages/MyCourse";
+import CreateModule from "./pages/CreateModule";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { getUserFromLocalStorage } from "./utils/utils";
 import type { User } from "./types/user";
+import MyOwnCourses from "./pages/MyOwnCourse";
 
 const App = () => {
   const user: User | null = getUserFromLocalStorage();
@@ -64,6 +66,22 @@ const App = () => {
         element={
           <ProtectedRoute>
             {user?.role?.role === "learner" ? <MyCourses /> : <Portal />}
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/create-module"
+        element={
+          <ProtectedRoute>
+            <CreateModule />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/my-own-courses"
+        element={
+          <ProtectedRoute>
+            {user?.role?.role === "instructor" && <MyOwnCourses />}
           </ProtectedRoute>
         }
       />

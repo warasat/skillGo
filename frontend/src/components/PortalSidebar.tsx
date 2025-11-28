@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaHome, FaBook, FaUser, FaCog } from "react-icons/fa";
+import { FaHome, FaBook, FaUser, FaCog, FaBookOpen } from "react-icons/fa";
 import { getUserFromLocalStorage } from "../utils/utils";
 
 const PortalSidebar = () => {
@@ -33,6 +33,20 @@ const PortalSidebar = () => {
           <span>My Courses</span>
         </Link>
       )}
+      {/* Only show for instructor */}
+      {user?.role?.role === "instructor" && (
+        <Link
+          to="/portal/my-own-courses"
+          className="flex items-center gap-2 p-2"
+        >
+          <FaBook />
+          <span>MyOwnCourses</span>
+        </Link>
+      )}
+      <Link to="/portal/create-module" className="flex items-center gap-2 p-2">
+        <FaBookOpen />
+        <span>Create Module</span>
+      </Link>
     </div>
   );
 };

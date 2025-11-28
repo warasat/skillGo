@@ -10,10 +10,14 @@ const API_CONSTANTS = {
   course: {
     create: "/courses/create-course",
     read: "/courses/get-course",
+    instructorCourse: "/courses/instructor-courses",
   },
   enrollment: {
     enroll: "/enrollments/enroll",
     myEnrollments: "/enrollments/my-enrollments",
+  },
+  module: {
+    create: "/modules/create-module",
   },
 };
 

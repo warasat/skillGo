@@ -16,3 +16,22 @@ export interface Course {
   category_id: string;
   user_id: string;
 }
+export interface SingleCourseResponse {
+  success: boolean;
+  data: {
+    _id: string;
+    title: string;
+    description: string;
+    paidStatus: boolean;
+    amount: number;
+    user_id: {
+      _id: string;
+      name: string;
+      email: string;
+    };
+    category_id: {
+      _id: string;
+      name: string;
+    };
+  };
+}
