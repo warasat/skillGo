@@ -10,6 +10,8 @@ import lessonRoutes from "./routes/lesson.route.js";
 import quizRoutes from "./routes/quiz.route.js";
 import reviewRoutes from "./routes/review.route.js";
 import commentsRoutes from "./routes/comment.route.js";
+import categoryRoutes from "./routes/category.route.js";
+import getUserRoutes from "./routes/getUser.route.js";
 
 dotenv.config();
 
@@ -32,6 +34,8 @@ app.use("/api/lessons", lessonRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/comments", commentsRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/users", getUserRoutes);
 
 app.get("/", (req, res) => {
   res.json("Server is running");

@@ -27,8 +27,12 @@ const Login = () => {
       const res = await login(payload);
       setResponse(res.data);
 
-      const token = res.data.data.token;
+      const { token, user } = res.data.data;
+      console.log(" User from API after login:", user);
+
       setTokenInLocalStorage(token);
+      localStorage.setItem("user", JSON.stringify(user));
+
       window.location.href = "/portal";
     } catch (err) {
       console.error("Login error:", err);

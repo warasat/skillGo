@@ -1,15 +1,21 @@
-import { Navigate } from "react-router-dom";
-import { getTokenFromLocalStorage } from "./utils"; // same folder import
-import type { ReactElement } from "react";
+// ProtectedRoute.tsx
+import { Navigate } from "react-router";
+import { getUserFromLocalStorage } from "./utils";
+import type { ReactNode } from "react";
 
-const ProtectedRoute = ({ children }: { children: ReactElement }) => {
-  const token = getTokenFromLocalStorage();
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
 
-  if (!token) {
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const user = getUserFromLocalStorage();
+
+  if (!user) {
+    // Not logged in → redirect to login
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

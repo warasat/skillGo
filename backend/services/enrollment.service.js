@@ -42,10 +42,14 @@ class EnrollmentService {
   }
 
   async getUserEnrollments(userId) {
-    return await Enrollment.find({ user_id: userId }).populate(
+    const rawEnrollments = await Enrollment.find({ user_id: userId });
+
+    const enrollments = await Enrollment.find({ user_id: userId }).populate(
       "course_id",
       "title description paidStatus"
     );
+
+    return enrollments;
   }
 }
 

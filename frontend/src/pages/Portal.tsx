@@ -1,23 +1,46 @@
+import { useNavigate } from "react-router-dom";
 import {
   getTokenFromLocalStorage,
   removeTokenFromLocalStorage,
 } from "../utils/utils";
+import PortalLayout from "../layouts/PortalLayout";
 
 const Portal = () => {
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     removeTokenFromLocalStorage();
-    if (!getTokenFromLocalStorage()) {
-      window.location.href = "/login";
-    }
+    navigate("/login"); // redirect to login after logout
+  };
+
+  const goToCourse = () => {
+    navigate("/portal/course"); // navigate to course page
   };
 
   return (
-    <div>
-      <div>Portal of user</div>
-      <div>
-        <button onClick={handleLogout}>Logout</button>
+    <PortalLayout>
+      <div className="p-8 bg-gray-100">
+        <h1 className="text-2xl font-bold mb-4">Portal of User</h1>
+
+        <div className="mb-4">
+          <button
+            onClick={goToCourse}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            Go to Course Page
+          </button>
+        </div>
+
+        <div>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Logout
+          </button>
+        </div>
       </div>
-    </div>
+    </PortalLayout>
   );
 };
 
