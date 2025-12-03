@@ -20,12 +20,22 @@ const PortalLayout: React.FC<PortalLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="h-screen bg-slate-50 flex flex-col">
-      <PortalHeader user={user} />
+    <div className="h-screen flex flex-col bg-slate-50">
+      {/* Header at top */}
+      <div className="flex-shrink-0">
+        <PortalHeader user={user} />
+      </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <PortalSidebar />
-        <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
+      <div className="flex flex-1">
+        {/* Sidebar - Fixed on left */}
+        <div className="fixed top-[64px] left-0 h-[calc(100vh-64px)]">
+          <PortalSidebar />
+        </div>
+
+        {/* Main content with left margin equal to sidebar width */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 ml-56">
+          {children}
+        </main>
       </div>
     </div>
   );

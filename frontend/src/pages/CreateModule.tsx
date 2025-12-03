@@ -1,13 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createModule } from "../services/module/module.api";
+import { getInstructorCourses } from "../services/course/course.api";
+import type { Course } from "../types/course";
 import PortalLayout from "../layouts/PortalLayout";
 
 const CreateModule = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
   const [courseId, setCourseId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Fetch instructor's courses
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const data = await getInstructorCourses();
+        setCourses(data);
+      } catch (err: any) {
+        console.error("Failed to fetch instructor courses:", err);
+        setMessage("Failed to fetch courses");
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,17 +64,26 @@ const CreateModule = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Course Dropdown */}
           <div>
-            <label className="block text-sm font-medium mb-1">Course ID</label>
-            <input
-              type="text"
+            <label className="block text-sm font-medium mb-1">
+              Select Course
+            </label>
+            <select
               value={courseId}
               onChange={(e) => setCourseId(e.target.value)}
-              placeholder="Enter course ID"
               className="w-full px-4 py-2 border rounded"
-            />
+            >
+              <option value="">-- Select your course --</option>
+              {courses.map((course) => (
+                <option key={course._id} value={course._id}>
+                  {course.title}
+                </option>
+              ))}
+            </select>
           </div>
 
+          {/* Module Title */}
           <div>
             <label className="block text-sm font-medium mb-1">Title</label>
             <input
@@ -69,6 +95,7 @@ const CreateModule = () => {
             />
           </div>
 
+          {/* Module Description */}
           <div>
             <label className="block text-sm font-medium mb-1">
               Description

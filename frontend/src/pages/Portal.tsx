@@ -1,17 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import {
-  getTokenFromLocalStorage,
-  removeTokenFromLocalStorage,
-} from "../utils/utils";
+
 import PortalLayout from "../layouts/PortalLayout";
 
 const Portal = () => {
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    removeTokenFromLocalStorage();
-    navigate("/login"); // redirect to login after logout
-  };
 
   const goToCourse = () => {
     navigate("/portal/course"); // navigate to course page
@@ -28,15 +20,6 @@ const Portal = () => {
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
           >
             Go to Course Page
-          </button>
-        </div>
-
-        <div>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Logout
           </button>
         </div>
       </div>

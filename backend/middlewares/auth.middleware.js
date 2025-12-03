@@ -13,14 +13,12 @@ const authMiddleware = (rolesAllowed = []) => {
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log("Decoded Token:", decoded);
 
       req.user = {
         id: decoded.userId,
         email: decoded.email,
         roleIdentifier: decoded.roleIdentifier,
       };
-      console.log("User from token:", req.user);
 
       if (
         rolesAllowed.length > 0 &&

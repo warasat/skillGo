@@ -12,6 +12,7 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import { getUserFromLocalStorage } from "./utils/utils";
 import type { User } from "./types/user";
 import MyOwnCourses from "./pages/MyOwnCourse";
+import CourseDetails from "./pages/CourseDetails"; // we’ll create this
 
 const App = () => {
   const user: User | null = getUserFromLocalStorage();
@@ -73,7 +74,7 @@ const App = () => {
         path="/portal/create-module"
         element={
           <ProtectedRoute>
-            <CreateModule />
+            {user?.role?.role === "instructor" && <CreateModule />}
           </ProtectedRoute>
         }
       />
@@ -84,6 +85,10 @@ const App = () => {
             {user?.role?.role === "instructor" && <MyOwnCourses />}
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/portal/my-own-courses/:courseId"
+        element={<CourseDetails />}
       />
     </Routes>
   );

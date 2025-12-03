@@ -1,5 +1,7 @@
 import constants from "../constants/constants.js";
 import Course from "../models/course.model.js";
+import Module from "../models/module.model.js"; // new
+import enrollmentService from "./enrollment.service.js";
 
 class CourseService {
   // Create Course
@@ -94,34 +96,78 @@ class CourseService {
     }
   }
 
-  // Get All Courses
+  // Get All Courses with module count
   async getAllCourses() {
-    return await Course.find()
+    const courses = await Course.find()
       .populate("user_id", "name email")
       .populate("category_id", "name");
+
+    const coursesWithCount = await Promise.all(
+      courses.map(async (course) => {
+        const moduleCount = await Module.countDocuments({
+          course_id: course._id,
+        });
+        return { ...course.toObject(), moduleCount };
+      })
+    );
+
+    return coursesWithCount;
   }
 
-  // Get Course By ID
+  // Get Course By ID with module count
   async getCourseById(courseId) {
-    return await Course.findById(courseId)
+    const course = await Course.findById(courseId)
       .populate("user_id", "name email")
       .populate("category_id", "name");
+
+    if (!course) return null;
+
+    const moduleCount = await Module.countDocuments({ course_id: course._id });
+    return { ...course.toObject(), moduleCount };
   }
-  // Get only Instructor_Course
+
+  // Get only Instructor_Courses with module count
   async getInstructorCourses(userId, roleIdentifier) {
-    try {
-      if (roleIdentifier !== constants.ROLES.INSTRUCTOR) {
-        throw new Error("Only instructors can view their courses");
-      }
-
-      const courses = await Course.find({ user_id: userId })
-        .populate("user_id", "name email")
-        .populate("category_id", "name");
-
-      return courses;
-    } catch (error) {
-      throw error;
+    if (roleIdentifier !== constants.ROLES.INSTRUCTOR) {
+      throw new Error("Only instructors can view their courses");
     }
+
+    const courses = await Course.find({ user_id: userId })
+      .populate("user_id", "name email")
+      .populate("category_id", "name");
+
+    const coursesWithCount = await Promise.all(
+      courses.map(async (course) => {
+        const moduleCount = await Module.countDocuments({
+          course_id: course._id,
+        });
+        return { ...course.toObject(), moduleCount };
+      })
+    );
+
+    return coursesWithCount;
+  }
+
+  // Get only courses the user has NOT enrolled in, with module count
+  async getAvailableCourses(userId) {
+    const enrolledIds = await enrollmentService.getEnrolledCourseIds(userId);
+
+    const courses = await Course.find({
+      _id: { $nin: enrolledIds },
+    })
+      .populate("user_id", "name email")
+      .populate("category_id", "name");
+
+    const coursesWithCount = await Promise.all(
+      courses.map(async (course) => {
+        const moduleCount = await Module.countDocuments({
+          course_id: course._id,
+        });
+        return { ...course.toObject(), moduleCount };
+      })
+    );
+
+    return coursesWithCount;
   }
 }
 

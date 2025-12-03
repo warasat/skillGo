@@ -1,45 +1,46 @@
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { register as registerUser } from "../services/auth/auth.api";
+import type { AuthRegisterRequest } from "../types/auth";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import type { AuthRegisterRequest, AuthRegisterResponse } from "../types/auth";
-import { register } from "../services/auth/auth.api";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👁️ import icons
 
 const Register = () => {
-  const [response, setResponse] = useState<AuthRegisterResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState(3);
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false); // 👁️ toggle password visibility
 
+  // Validation schema
+  const schema = Yup.object({
+    name: Yup.string().required("Full name is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+    role: Yup.number()
+      .oneOf([2, 3], "Invalid role")
+      .required("Role is required"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AuthRegisterRequest>({
+    resolver: yupResolver(schema),
+    defaultValues: { name: "", email: "", password: "", role: 3 },
+  });
+
+  const onSubmit = async (data: AuthRegisterRequest) => {
     try {
-      if (!name || !email || !password || !role) {
-        throw new Error("All fields are required");
-      }
-      const payload: AuthRegisterRequest = {
-        name,
-        email,
-        password,
-        role,
-      };
-      const res = await register(payload);
-      setResponse(res.data);
-
-      window.location.href = "/login";
-    } catch (err) {
-      console.error("Registration error:", err);
-      const errorMessage = ``;
-      err instanceof Error ? err.message : "Registration failed";
-      setError(
-        (err as any)?.response?.data?.message ||
-          errorMessage ||
-          "Registration failed"
+      await registerUser(data);
+      alert("Registration successful!");
+      navigate("/login");
+    } catch (err: any) {
+      alert(
+        err.response?.data?.message || err.message || "Registration failed"
       );
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -48,93 +49,85 @@ const Register = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-
-        {/* Success Message */}
-        {response && (
-          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
-            Registration successful! Redirecting to login...
-          </div>
-        )}
-
-        <form onSubmit={handleRegister}>
-          {/* Name Input */}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Name */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Full Name</label>
             <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your full name"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
+              {...register("name")}
+              placeholder="Full Name"
+              className="w-full px-4 py-2 border rounded"
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name.message}</p>
+            )}
           </div>
 
-          {/* Email Input */}
+          {/* Email */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Email</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
+              {...register("email")}
+              placeholder="Email"
+              className="w-full px-4 py-2 border rounded"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
           </div>
 
-          {/* Password Input */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Password</label>
+          {/* Password with Eye Icon 👁️ */}
+          <div className="mb-4 relative">
             <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
+              {...register("password")}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password must be at least 8 characters"
+              className="w-full px-4 py-2 border rounded pr-10"
             />
+            {/* 👁️ Eye icon button */}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
-          {/* Role Dropdown */}
+          {/* Role */}
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">Role</label>
             <select
-              value={role}
-              onChange={(e) => setRole(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
+              {...register("role")}
+              className="w-full px-4 py-2 border rounded"
             >
               <option value={2}>Instructor</option>
               <option value={3}>Learner</option>
             </select>
+            {errors.role && (
+              <p className="text-red-500 text-sm">{errors.role.message}</p>
+            )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-blue-500 text-white py-2 rounded font-semibold hover:bg-blue-600 disabled:bg-gray-400"
+            disabled={isSubmitting}
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
           >
-            {loading ? "Registering..." : "Register"}
+            {isSubmitting ? "Registering..." : "Register"}
           </button>
         </form>
 
-        {/* Link to Login */}
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{" "}
-            <a href="/login" className="text-blue-500 hover:underline">
-              Login here
-            </a>
-          </p>
-        </div>
+        <p className="mt-4 text-sm text-center">
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-500 hover:underline">
+            Login
+          </a>
+        </p>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ export interface Course {
   amount: number;
   category_id: string;
   user_id: string;
+  moduleCount: number;
 }
 export interface SingleCourseResponse {
   success: boolean;

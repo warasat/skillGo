@@ -7,6 +7,7 @@ import PortalLayout from "../layouts/PortalLayout";
 const MyCourses = () => {
   const [enrollments, setEnrollments] = useState<EnrollmentRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(""); // for search
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,17 +30,32 @@ const MyCourses = () => {
     .map((enroll) => enroll.course_id as unknown as Course)
     .filter((course): course is Course => course != null);
 
-  console.log("Mapped MyCourses:", myCourses);
+  // Filter courses by search term
+  const filteredCourses = myCourses.filter((course) =>
+    course.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <PortalLayout>
       <div className="p-6">
         <h2 className="text-xl font-semibold mb-4">My Courses</h2>
-        {myCourses.length === 0 ? (
+
+        {/* Search Field */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search courses..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {filteredCourses.length === 0 ? (
           <p>You are not enrolled in any courses yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {myCourses.map((course) => (
+            {filteredCourses.map((course) => (
               <div
                 key={course._id}
                 className="border p-4 rounded-lg shadow hover:shadow-md transition"

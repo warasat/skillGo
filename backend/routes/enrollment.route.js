@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/enroll/:courseId", authMiddleware([3]), async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("User ID from request:", userId);
+
     const roleIdentifier = req.user.roleIdentifier;
     const courseId = req.params.courseId;
     const { amount } = req.body;

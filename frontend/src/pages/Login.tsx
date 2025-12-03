@@ -1,47 +1,54 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 import type { AuthLoginRequest, AuthLoginResponse } from "../types/auth";
 import { login } from "../services/auth/auth.api";
 import { setTokenInLocalStorage } from "../utils/utils";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [response, setResponse] = useState<AuthLoginResponse | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Handle login form submission
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  // Yup validation schema
+  const schema = Yup.object({
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Password is required"),
+  });
+
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<AuthLoginRequest>({
+    resolver: yupResolver(schema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  // Handle login submit
+  const onSubmit = async (data: AuthLoginRequest) => {
     setError(null);
-
     try {
-      // Validate inputs
-      if (!email || !password) {
-        throw new Error("Email and password are required");
-      }
-
-      // Make API call
-      const payload: AuthLoginRequest = { email, password };
-      const res = await login(payload);
+      const res = await login(data);
       setResponse(res.data);
 
       const { token, user } = res.data.data;
-      console.log(" User from API after login:", user);
+      console.log("User from API after login:", user);
 
       setTokenInLocalStorage(token);
       localStorage.setItem("user", JSON.stringify(user));
 
       window.location.href = "/portal";
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login error:", err);
-      const errorMessage = err instanceof Error ? err.message : "Login failed";
-      setError(
-        (err as any)?.response?.data?.message || errorMessage || "Login failed"
-      );
-    } finally {
-      setLoading(false);
+      setError(err?.response?.data?.message || err.message || "Login failed");
     }
   };
 
@@ -50,55 +57,74 @@ const Login = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
+        {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
             {error}
           </div>
         )}
+
+        {/* Success Message */}
         {response && (
           <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
             Login successful!
           </div>
         )}
 
-        <form onSubmit={handleLogin}>
-          {/* Email Input */}
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Email */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Email</label>
             <input
+              {...register("email")}
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
+              disabled={isSubmitting}
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
-          {/* Password Input */}
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label className="block text-sm font-medium mb-2">Password</label>
             <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading}
+              {...register("password")}
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your 8 characters password"
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+              disabled={isSubmitting}
             />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-gray-600 hover:text-gray-800 p-1"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={isSubmitting}
             className="w-full bg-blue-500 text-white py-2 rounded font-semibold hover:bg-blue-600 disabled:bg-gray-400"
           >
-            {loading ? "Logging in..." : "Login"}
+            {isSubmitting ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        {/* Link to Register */}
+        {/* Register Link */}
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{" "}

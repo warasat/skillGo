@@ -1,22 +1,20 @@
 import CONSTANTS from "../constants/constants";
-import type { User } from "../types/user";
+import type { User, UserRole } from "../types/user";
 
-// create a method to setItem in local storage
+// Token helpers
 export const setTokenInLocalStorage = (token: any) => {
   localStorage.setItem(CONSTANTS.token_key.name, token);
 };
 
-// create a method to getitem from local storage
 export const getTokenFromLocalStorage = () => {
   return localStorage.getItem(CONSTANTS.token_key.name);
 };
 
-// create a method to remove token from local storage
 export const removeTokenFromLocalStorage = () => {
   return localStorage.removeItem(CONSTANTS.token_key.name);
 };
 
-//Initials of user name
+// Initials of user name
 export const getUserInitials = (name: string | null | undefined): string => {
   if (!name || typeof name !== "string") return "H";
 
@@ -32,12 +30,42 @@ export const getUserInitials = (name: string | null | undefined): string => {
   return initials || "H";
 };
 
+// Get user from local storage safely
+
+const ROLE_MAP: Record<string, UserRole> = {
+  admin: { identifier: 1, role: "admin" },
+  instructor: { identifier: 2, role: "instructor" },
+  learner: { identifier: 3, role: "learner" },
+};
+
 export const getUserFromLocalStorage = (): User | null => {
   const userData = localStorage.getItem("user");
   if (!userData) return null;
 
   try {
-    return JSON.parse(userData) as User;
+    const rawUser = JSON.parse(userData);
+
+    let normalizedRole: UserRole;
+
+    if (typeof rawUser.role === "string") {
+      normalizedRole = ROLE_MAP[rawUser.role.toLowerCase()] || ROLE_MAP.learner;
+    } else if (
+      rawUser.role &&
+      typeof rawUser.role === "object" &&
+      "role" in rawUser.role &&
+      "identifier" in rawUser.role
+    ) {
+      normalizedRole = rawUser.role as UserRole;
+    } else {
+      // fallback
+      normalizedRole = ROLE_MAP.learner;
+    }
+
+    return {
+      name: rawUser.name,
+      email: rawUser.email,
+      role: normalizedRole,
+    };
   } catch {
     return null;
   }

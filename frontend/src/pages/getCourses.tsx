@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllCourse } from "../services/course/course.api";
+import { getAvailableCourses } from "../services/course/course.api";
 import { enrollCourse } from "../services/enrollment/enrollment.api";
 import type { Course } from "../types/course";
 import PortalLayout from "../layouts/PortalLayout";
@@ -9,15 +9,17 @@ const GetCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]); // store enrolled course ids
+  const [enrolledCourses, setEnrolledCourses] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const data = await getAllCourse();
-        setCourses(data);
+        const data = await getAvailableCourses();
+        setCourses(data || []);
       } catch (err: any) {
         setError(err.message || "Failed to load courses");
+        setCourses([]);
       } finally {
         setLoading(false);
       }
@@ -31,8 +33,7 @@ const GetCourses = () => {
     try {
       if (!course.paidStatus) {
         // Free course → auto-enroll
-        const enrollment = await enrollCourse(course._id);
-        console.log("Enrolled:", enrollment);
+        await enrollCourse(course._id);
         setEnrolledCourses((prev) => [...prev, course._id]);
         alert(`Successfully enrolled in ${course.title}`);
       } else {
@@ -41,8 +42,7 @@ const GetCourses = () => {
           `Pay $${course.amount} to enroll in ${course.title}?`
         );
         if (confirmPayment) {
-          const enrollment = await enrollCourse(course._id);
-          console.log("Paid & Enrolled:", enrollment);
+          await enrollCourse(course._id);
           setEnrolledCourses((prev) => [...prev, course._id]);
           alert(`Payment successful! Enrolled in ${course.title}`);
         }
@@ -56,15 +56,31 @@ const GetCourses = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
+  const filteredCourses = courses.filter((course) =>
+    course.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <PortalLayout>
       <div className="p-6">
         <h2 className="text-xl font-semibold mb-4">All Courses</h2>
-        {courses.length === 0 ? (
+
+        {/* Search Field */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search courses..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {filteredCourses.length === 0 ? (
           <p>No courses found.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {courses.map((course) => (
+            {filteredCourses.map((course) => (
               <div
                 key={course._id}
                 className="border p-4 rounded-lg shadow hover:shadow-md transition"
@@ -76,7 +92,7 @@ const GetCourses = () => {
                 </p>
                 <button
                   onClick={() => handleEnroll(course)}
-                  className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                  className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 cursor-pointer"
                   disabled={enrolledCourses.includes(course._id)}
                 >
                   {enrolledCourses.includes(course._id)

@@ -1,52 +1,90 @@
-import { Link } from "react-router-dom";
-import { FaHome, FaBook, FaUser, FaCog, FaBookOpen } from "react-icons/fa";
-import { getUserFromLocalStorage } from "../utils/utils";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import {
+  getUserFromLocalStorage,
+  removeTokenFromLocalStorage,
+} from "../utils/utils";
+
+import { LuLayoutDashboard } from "react-icons/lu";
+import { AiOutlineLogout } from "react-icons/ai";
+import { LuBookOpen } from "react-icons/lu";
+import { LuBookOpenCheck } from "react-icons/lu";
+import { FaRegUser } from "react-icons/fa";
+import { IoSettingsOutline } from "react-icons/io5";
+import { LuBookOpenText } from "react-icons/lu";
 
 const PortalSidebar = () => {
   const user = getUserFromLocalStorage();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    removeTokenFromLocalStorage();
+    navigate("/login");
+  };
+
+  const menuItems = [
+    { to: "/portal", label: "Portal", icon: <LuLayoutDashboard /> },
+    { to: "/portal/course", label: "Courses", icon: <LuBookOpen /> },
+    { to: "/portal/profile", label: "Profile", icon: <FaRegUser /> },
+    { to: "/portal/setting", label: "Settings", icon: <IoSettingsOutline /> },
+  ];
+
+  if (user?.role?.role === "learner") {
+    menuItems.push({
+      to: "/portal/my-courses",
+      label: "My Courses",
+      icon: <LuBookOpenCheck />,
+    });
+  }
+
+  if (user?.role?.role === "instructor") {
+    menuItems.push(
+      {
+        to: "/portal/my-own-courses",
+        label: "My Courses",
+        icon: <LuBookOpenCheck />,
+      },
+      {
+        to: "/portal/create-module",
+        label: "Create Module",
+        icon: <LuBookOpenText />,
+      }
+    );
+  }
 
   return (
-    <div className="w-48 p-4 space-y-4">
-      <Link to="/portal" className="flex items-center gap-2 p-2">
-        <FaHome />
-        <span>Portal</span>
-      </Link>
+    <div className="w-56 h-full flex flex-col justify-between bg-white shadow-md p-4 pt-8">
+      {/* Menu Items */}
+      <div className="space-y-2">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.to;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex items-center gap-2 p-2 rounded-md transition-all duration-200 
+                ${
+                  isActive
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 hover:bg-blue-100 hover:text-blue-600"
+                }`}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
 
-      <Link to="/portal/course" className="flex items-center gap-2 p-2">
-        <FaBook />
-        <span>Courses</span>
-      </Link>
-
-      <Link to="/portal/profile" className="flex items-center gap-2 p-2">
-        <FaUser />
-        <span>Profile</span>
-      </Link>
-
-      <Link to="/portal/setting" className="flex items-center gap-2 p-2">
-        <FaCog />
-        <span>Settings</span>
-      </Link>
-      {/* My Courses Link - Only for Learner */}
-      {user?.role?.role === "learner" && (
-        <Link to="/portal/my-courses" className="flex items-center gap-2 p-2">
-          <FaBook />
-          <span>My Courses</span>
-        </Link>
-      )}
-      {/* Only show for instructor */}
-      {user?.role?.role === "instructor" && (
-        <Link
-          to="/portal/my-own-courses"
-          className="flex items-center gap-2 p-2"
-        >
-          <FaBook />
-          <span>MyOwnCourses</span>
-        </Link>
-      )}
-      <Link to="/portal/create-module" className="flex items-center gap-2 p-2">
-        <FaBookOpen />
-        <span>Create Module</span>
-      </Link>
+      {/* Logout Button at Bottom */}
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-2 p-2 rounded-md text-red-600 hover:bg-red-100 transition-all duration-200 cursor-pointer"
+      >
+        <AiOutlineLogout />
+        <span>Logout</span>
+      </button>
     </div>
   );
 };

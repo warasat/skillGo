@@ -2,6 +2,7 @@ import Enrollment from "../models/enrollment.model.js";
 import Payment from "../models/payment.model.js";
 import Course from "../models/course.model.js";
 import constants from "../constants/constants.js";
+import { mongoose } from "mongoose";
 
 class EnrollmentService {
   async enrollCourse(userId, roleIdentifier, courseId, amount = 0) {
@@ -46,10 +47,26 @@ class EnrollmentService {
 
     const enrollments = await Enrollment.find({ user_id: userId }).populate(
       "course_id",
-      "title description paidStatus"
+      "title description paidStatus amount"
     );
 
     return enrollments;
+  }
+  // Get array of course IDs the user is enrolled in
+
+  async getEnrolledCourseIds(userId) {
+    if (!userId) {
+      console.log("No userId provided!");
+      return [];
+    }
+
+    const uid = new mongoose.Types.ObjectId(userId);
+
+    const enrollments = await Enrollment.find({ user_id: uid }).select(
+      "course_id"
+    );
+
+    return enrollments.map((e) => e.course_id);
   }
 }
 

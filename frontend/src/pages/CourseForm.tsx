@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { getAllCategories } from "../services/category/category.api";
-import { createCourse } from "../services/course/course.api";
+import { createCourse, updateCourse } from "../services/course/course.api";
 import type { CategoryResponse } from "../types/category";
 import type { CourseRequest } from "../types/course";
 import PortalLayout from "../layouts/PortalLayout";
+import CONSTANTS from "../constants/constants";
+
+const UPDATED_BLACK_COLOR = CONSTANTS.color_constants.headings.hex;
 
 const CourseForm = () => {
   const [title, setTitle] = useState("");
@@ -16,7 +20,21 @@ const CourseForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Fetch categories from backend
+  const location = useLocation();
+  const courseToEdit = location.state?.course;
+
+  // Prefill form if edit mode
+  useEffect(() => {
+    if (courseToEdit) {
+      setTitle(courseToEdit.title);
+      setDescription(courseToEdit.description);
+      setCategoryId(courseToEdit.category_id);
+      setPaidStatus(courseToEdit.paidStatus);
+      setAmount(courseToEdit.amount);
+    }
+  }, [courseToEdit]);
+
+  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -39,7 +57,6 @@ const CourseForm = () => {
       if (!title || !description || !categoryId) {
         throw new Error("Title, description and category are required.");
       }
-
       if (paidStatus && amount <= 0) {
         throw new Error("Please enter a valid amount for paid courses.");
       }
@@ -56,17 +73,17 @@ const CourseForm = () => {
         amount: paidStatus ? amount : 0,
       };
 
-      const res = await createCourse(payload);
-      setSuccess("Course created successfully!");
-      console.log("Created course:", res);
-
-      setTitle("");
-      setDescription("");
-      setCategoryId("");
-      setPaidStatus(false);
-      setAmount(0);
+      if (courseToEdit) {
+        // Update mode
+        await updateCourse(courseToEdit._id, payload);
+        setSuccess("Course updated successfully!");
+      } else {
+        // Create mode
+        await createCourse(payload);
+        setSuccess("Course created successfully!");
+      }
     } catch (err: any) {
-      setError(err.message || "Failed to create course");
+      setError(err.message || "Operation failed");
     } finally {
       setLoading(false);
     }
@@ -76,7 +93,12 @@ const CourseForm = () => {
     <PortalLayout>
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-6 text-center">Create Course</h2>
+          <h2
+            className="text-2xl font-bold mb-6 text-center"
+            style={{ color: UPDATED_BLACK_COLOR }}
+          >
+            {courseToEdit ? "Edit Course" : "Create Course"}
+          </h2>
 
           {error && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
@@ -128,7 +150,7 @@ const CourseForm = () => {
                 <option value="">Select category</option>
                 {categories.map((c) => (
                   <option key={c._id} value={c._id}>
-                    {c.name} {}
+                    {c.name}
                   </option>
                 ))}
               </select>
@@ -166,7 +188,13 @@ const CourseForm = () => {
               disabled={loading}
               className="w-full bg-blue-500 text-white py-2 rounded font-semibold hover:bg-blue-600 disabled:bg-gray-400"
             >
-              {loading ? "Creating..." : "Create Course"}
+              {loading
+                ? courseToEdit
+                  ? "Updating..."
+                  : "Creating..."
+                : courseToEdit
+                ? "Update Course"
+                : "Create Course"}
             </button>
           </form>
         </div>
