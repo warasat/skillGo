@@ -30,6 +30,30 @@ router.post("/create-module", authMiddleware([2]), async (req, res) => {
   }
 });
 
+// Get a single module by its ID
+router.get("/module/:id", authMiddleware(), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const module = await ModuleService.getModuleById(id);
+
+    if (!module) {
+      return res.status(404).json({
+        success: false,
+        message: "Module not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: module,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
 //  Get modules for a specific course
 router.get("/:courseId", authMiddleware(), async (req, res) => {
   try {

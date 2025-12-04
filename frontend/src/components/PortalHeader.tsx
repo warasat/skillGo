@@ -8,6 +8,9 @@ import {
   getUserFromLocalStorage,
 } from "../utils/utils";
 import CONSTANTS from "../constants/constants";
+import { AiOutlineLogout } from "react-icons/ai";
+import { FaRegUser } from "react-icons/fa";
+
 const PortalHeader: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -83,16 +86,19 @@ const PortalHeader: React.FC = () => {
             <div className="absolute top-full mt-2 right-0 w-40 bg-white border rounded shadow-lg flex flex-col z-50">
               <button
                 onClick={handleProfile}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 text-left cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 text-left cursor-pointer"
                 style={{ color: `#${CONSTANTS.color_constants.headings.hex}` }}
               >
-                Profile
+                <FaRegUser />
+                <span>Profile</span>
               </button>
+
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-red-600 hover:bg-red-100 text-left cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-100 text-left cursor-pointer"
               >
-                Logout
+                <AiOutlineLogout />
+                <span>Logout</span>
               </button>
             </div>
           )}

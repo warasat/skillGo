@@ -1,5 +1,4 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
 import {
   getUserFromLocalStorage,
   removeTokenFromLocalStorage,
@@ -11,7 +10,6 @@ import { LuBookOpen } from "react-icons/lu";
 import { LuBookOpenCheck } from "react-icons/lu";
 import { FaRegUser } from "react-icons/fa";
 import { IoSettingsOutline } from "react-icons/io5";
-import { LuBookOpenText } from "react-icons/lu";
 
 const PortalSidebar = () => {
   const user = getUserFromLocalStorage();
@@ -25,7 +23,10 @@ const PortalSidebar = () => {
 
   const menuItems = [
     { to: "/portal", label: "Portal", icon: <LuLayoutDashboard /> },
-    { to: "/portal/course", label: "Courses", icon: <LuBookOpen /> },
+
+    ...(user?.role?.role === "learner"
+      ? [{ to: "/portal/course", label: "Courses", icon: <LuBookOpen /> }]
+      : []),
     { to: "/portal/profile", label: "Profile", icon: <FaRegUser /> },
     { to: "/portal/setting", label: "Settings", icon: <IoSettingsOutline /> },
   ];
@@ -39,18 +40,11 @@ const PortalSidebar = () => {
   }
 
   if (user?.role?.role === "instructor") {
-    menuItems.push(
-      {
-        to: "/portal/my-own-courses",
-        label: "My Courses",
-        icon: <LuBookOpenCheck />,
-      },
-      {
-        to: "/portal/create-module",
-        label: "Create Module",
-        icon: <LuBookOpenText />,
-      }
-    );
+    menuItems.push({
+      to: "/portal/courses",
+      label: "Courses",
+      icon: <LuBookOpenCheck />,
+    });
   }
 
   return (
@@ -58,17 +52,19 @@ const PortalSidebar = () => {
       {/* Menu Items */}
       <div className="space-y-2">
         {menuItems.map((item) => {
-          const isActive = location.pathname === item.to;
+          const isActive =
+            location.pathname === item.to ||
+            (item.to !== "/portal" &&
+              location.pathname.startsWith(item.to + "/"));
           return (
             <Link
               key={item.to}
               to={item.to}
-              className={`flex items-center gap-2 p-2 rounded-md transition-all duration-200 
-                ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-700 hover:bg-blue-100 hover:text-blue-600"
-                }`}
+              className={`flex items-center gap-2 p-2 rounded-md transition-all duration-200 ${
+                isActive
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-700 hover:bg-blue-100 hover:text-blue-600"
+              }`}
             >
               {item.icon}
               <span>{item.label}</span>
@@ -77,7 +73,7 @@ const PortalSidebar = () => {
         })}
       </div>
 
-      {/* Logout Button at Bottom */}
+      {/* Logout Button */}
       <button
         onClick={handleLogout}
         className="flex items-center gap-2 p-2 rounded-md text-red-600 hover:bg-red-100 transition-all duration-200 cursor-pointer"

@@ -4,6 +4,7 @@ import { enrollCourse } from "../services/enrollment/enrollment.api";
 import type { Course } from "../types/course";
 import PortalLayout from "../layouts/PortalLayout";
 import { getTokenFromLocalStorage } from "../utils/utils";
+import CourseCard from "../components/CourseCard";
 
 const GetCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -32,12 +33,10 @@ const GetCourses = () => {
     console.log("Course ID clicked:", course._id);
     try {
       if (!course.paidStatus) {
-        // Free course → auto-enroll
         await enrollCourse(course._id);
         setEnrolledCourses((prev) => [...prev, course._id]);
         alert(`Successfully enrolled in ${course.title}`);
       } else {
-        // Paid course → temporary payment handling
         const confirmPayment = window.confirm(
           `Pay $${course.amount} to enroll in ${course.title}?`
         );
@@ -79,20 +78,20 @@ const GetCourses = () => {
         {filteredCourses.length === 0 ? (
           <p>No courses found.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {filteredCourses.map((course) => (
-              <div
+              <CourseCard
                 key={course._id}
-                className="border p-4 rounded-lg shadow hover:shadow-md transition"
+                course={course}
+                onClick={() => handleEnroll(course)}
               >
-                <h3 className="font-bold text-lg">{course.title}</h3>
-                <p className="text-sm text-gray-600">{course.description}</p>
-                <p className="mt-2 font-medium">
-                  Price: {course.paidStatus ? `$${course.amount}` : "Free"}
-                </p>
+                {/* Custom slot for enroll button */}
                 <button
-                  onClick={() => handleEnroll(course)}
-                  className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEnroll(course);
+                  }}
+                  className=" bg-blue-500 text-white px-3 py-2  hover:bg-blue-600 cursor-pointer w-full"
                   disabled={enrolledCourses.includes(course._id)}
                 >
                   {enrolledCourses.includes(course._id)
@@ -101,7 +100,7 @@ const GetCourses = () => {
                     ? "Pay & Enroll"
                     : "Enroll"}
                 </button>
-              </div>
+              </CourseCard>
             ))}
           </div>
         )}

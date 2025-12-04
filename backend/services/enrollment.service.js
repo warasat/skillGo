@@ -43,12 +43,17 @@ class EnrollmentService {
   }
 
   async getUserEnrollments(userId) {
-    const rawEnrollments = await Enrollment.find({ user_id: userId });
+    const enrollments = await Enrollment.find({ user_id: userId }).populate({
+      path: "course_id",
+      populate: [
+        { path: "category_id", select: "name" },
+        { path: "user_id", select: "name" },
+      ],
+    });
 
-    const enrollments = await Enrollment.find({ user_id: userId }).populate(
-      "course_id",
-      "title description paidStatus amount"
-    );
+    if (!enrollments.length) {
+      throw new Error("No enrollments found for this user");
+    }
 
     return enrollments;
   }

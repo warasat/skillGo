@@ -1,7 +1,9 @@
+import type { Course } from "./course";
+
 export interface EnrollmentRequest {
   _id: string;
   user_id: string;
-  course_id: string;
+  course_id: Course;
   payment_id?: string | null;
   status: "enrolled" | "completed" | "dropped";
   enrolledAt: string;
@@ -9,6 +11,6 @@ export interface EnrollmentRequest {
 
 export interface EnrollmentResponse {
   success: boolean;
-  message: string;
+  message?: string;
   data: EnrollmentRequest[];
 }

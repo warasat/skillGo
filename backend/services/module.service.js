@@ -33,6 +33,15 @@ class ModuleService {
     return modules;
   }
 
+  // get module with Id
+  async getModuleById(moduleId) {
+    const module = await Module.findById(moduleId).populate(
+      "course_id",
+      "title description"
+    );
+    return module;
+  }
+
   // Update a module
   async updateModule(instructorId, roleIdentifier, moduleId, updateData) {
     if (roleIdentifier !== constants.ROLES.INSTRUCTOR) {

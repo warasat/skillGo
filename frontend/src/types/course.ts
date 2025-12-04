@@ -13,10 +13,20 @@ export interface Course {
   description: string;
   paidStatus: boolean;
   amount: number;
-  category_id: string;
-  user_id: string;
   moduleCount: number;
+
+  category_id: {
+    _id: string;
+    name: string;
+  };
+
+  user_id: {
+    _id: string;
+    name: string;
+    email: string;
+  };
 }
+
 export interface SingleCourseResponse {
   success: boolean;
   data: {

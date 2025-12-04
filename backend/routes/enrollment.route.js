@@ -34,7 +34,7 @@ router.post("/enroll/:courseId", authMiddleware([3]), async (req, res) => {
 });
 
 // Get users enrollments
-router.get("/my-enrollments", authMiddleware([3]), async (req, res) => {
+router.get("/my-enrollments", authMiddleware([]), async (req, res) => {
   try {
     const userId = req.user.id;
     const enrollments = await EnrollmentService.getUserEnrollments(userId);
