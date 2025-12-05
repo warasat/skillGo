@@ -12,6 +12,7 @@ import reviewRoutes from "./routes/review.route.js";
 import commentsRoutes from "./routes/comment.route.js";
 import categoryRoutes from "./routes/category.route.js";
 import getUserRoutes from "./routes/getUser.route.js";
+import quizAttemptRoutes from "./routes/quizAttempt.route.js";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/comments", commentsRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/users", getUserRoutes);
+app.use("/api/quiz-attempt", quizAttemptRoutes);
 
 app.get("/", (req, res) => {
   res.json("Server is running");

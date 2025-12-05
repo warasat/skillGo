@@ -4,7 +4,6 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Create quiz (Instructor only)
 router.post("/create-quiz", authMiddleware([2]), async (req, res) => {
   try {
     const instructorId = req.user.id;
@@ -16,31 +15,31 @@ router.post("/create-quiz", authMiddleware([2]), async (req, res) => {
       roleIdentifier,
       quizData
     );
+
     res.status(201).json({ success: true, data: quiz });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 });
 
-// Get quizzes for a lesson
-router.get("/:lessonId", authMiddleware(), async (req, res) => {
+router.get("/module/:moduleId", authMiddleware(), async (req, res) => {
   try {
     const userId = req.user.id;
     const roleIdentifier = req.user.roleIdentifier;
-    const { lessonId } = req.params;
+    const { moduleId } = req.params;
 
-    const quizzes = await QuizService.getQuizzes(
+    const quiz = await QuizService.getQuizByModule(
       userId,
       roleIdentifier,
-      lessonId
+      moduleId
     );
-    res.status(200).json({ success: true, data: quizzes });
+
+    res.status(200).json({ success: true, data: quiz });
   } catch (error) {
-    res.status(403).json({ success: false, message: error.message });
+    res.status(404).json({ success: false, message: error.message });
   }
 });
 
-// Update quiz (Instructor only)
 router.patch("/:id", authMiddleware([2]), async (req, res) => {
   try {
     const instructorId = req.user.id;
@@ -54,13 +53,13 @@ router.patch("/:id", authMiddleware([2]), async (req, res) => {
       id,
       updateData
     );
+
     res.status(200).json({ success: true, data: updatedQuiz });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
 });
 
-// Delete quiz (Instructor only)
 router.delete("/:id", authMiddleware([2]), async (req, res) => {
   try {
     const instructorId = req.user.id;
@@ -72,6 +71,7 @@ router.delete("/:id", authMiddleware([2]), async (req, res) => {
       roleIdentifier,
       id
     );
+
     res.status(200).json({ success: true, message: result.message });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
