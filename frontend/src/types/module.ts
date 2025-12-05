@@ -5,12 +5,8 @@ export interface ModuleRequest {
 }
 
 export interface ModuleResponse {
-  success: boolean;
-  message: string;
-  data: {
-    _id: string;
-    course_id: string;
-    title: string;
-    description: string;
-  };
+  _id: string;
+  course_id: string;
+  title: string;
+  description: string;
 }

@@ -13,6 +13,7 @@ import type { User } from "./types/user";
 import MyOwnCourses from "./pages/MyOwnCourse";
 import CourseDetails from "./pages/CourseDetails";
 import ModuleDetails from "./pages/ModuleDetails";
+import CourseProgressPage from "./pages/CourseProgressPage";
 
 const App = () => {
   const user: User | null = getUserFromLocalStorage();
@@ -92,6 +93,14 @@ const App = () => {
         element={
           <ProtectedRoute>
             <ModuleDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/portal/my-courses/progress/:courseId"
+        element={
+          <ProtectedRoute>
+            <CourseProgressPage />
           </ProtectedRoute>
         }
       />

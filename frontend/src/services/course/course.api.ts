@@ -18,8 +18,10 @@ export const getAllCourse = async (): Promise<Course[]> => {
 export const getCourseById = async (
   courseId: string
 ): Promise<SingleCourseResponse> => {
-  const response = await API.get(`${API_CONSTANTS.course.read}/${courseId}`);
-  console.log("📦 Course by ID:", response.data.data);
+  const response = await API.get(
+    `${API_CONSTANTS.course.readById}/${courseId}`
+  );
+  console.log(" Course by ID:", response.data.data);
   return response.data;
 };
 export const getInstructorCourses = async (): Promise<Course[]> => {

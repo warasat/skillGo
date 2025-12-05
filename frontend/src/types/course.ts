@@ -1,3 +1,5 @@
+import type { ModuleResponse } from "../types/module";
+
 export interface CourseRequest {
   user_id: string;
   category_id: string;
@@ -14,7 +16,7 @@ export interface Course {
   paidStatus: boolean;
   amount: number;
   moduleCount: number;
-
+  modules?: ModuleResponse[];
   category_id: {
     _id: string;
     name: string;

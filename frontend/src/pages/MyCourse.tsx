@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getMyCourses } from "../services/enrollment/enrollment.api";
 import type { EnrollmentRequest } from "../types/enrollment";
 import type { Course } from "../types/course";
@@ -9,6 +10,7 @@ const MyCourses = () => {
   const [enrollments, setEnrollments] = useState<EnrollmentRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,7 +58,13 @@ const MyCourses = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {filteredCourses.map((course) => (
-              <CourseCard key={course._id} course={course} onClick={() => {}} />
+              <CourseCard
+                key={course._id}
+                course={course}
+                onClick={() =>
+                  navigate(`/portal/my-courses/progress/${course._id}`)
+                }
+              />
             ))}
           </div>
         )}

@@ -5,6 +5,8 @@ import PortalLayout from "../layouts/PortalLayout";
 import CreateLessonModal from "../components/lessonModal";
 import ConfirmModal from "../components/DeleteModal";
 import { getLessonsByModule } from "../services/lesson/lesson.api";
+import { LiaEditSolid } from "react-icons/lia";
+import { RiDeleteBin7Line } from "react-icons/ri";
 
 interface Lesson {
   _id: string;
@@ -176,15 +178,15 @@ const ModuleDetails = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEditLesson(lesson)}
-                    className="px-2 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500 cursor-pointer"
+                    className="text-blue-600 hover:underline text-sm cursor-pointer"
                   >
-                    Edit
+                    <LiaEditSolid />
                   </button>
                   <button
                     onClick={() => handleDeleteLesson(lesson._id)}
-                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                    className="text-red-600 hover:underline text-sm cursor-pointer"
                   >
-                    Delete
+                    <RiDeleteBin7Line />
                   </button>
                 </div>
               </div>
