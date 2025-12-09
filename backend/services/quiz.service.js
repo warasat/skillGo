@@ -41,7 +41,7 @@ class QuizService {
     return quiz;
   }
 
-  //  Get quiz by module (Learner must be enrolled)
+  // Get quiz by module (Instructor OR Learner)
   async getQuizByModule(userId, roleIdentifier, moduleId) {
     const module = await Module.findById(moduleId).populate({
       path: "course_id",
@@ -50,7 +50,20 @@ class QuizService {
 
     if (!module) throw new Error("Module not found");
 
-    if (roleIdentifier === constants.ROLES.LEARNER) {
+    // Instructor case
+    if (Number(roleIdentifier) === constants.ROLES.INSTRUCTOR) {
+      // Check if instructor owns this module
+      if (module.course_id.user_id.toString() !== userId.toString()) {
+        throw new Error("You do not own this course/module");
+      }
+
+      // Instructor can see all quizzes related to this module
+      const quizzes = await Quiz.find({ module_id: moduleId });
+      return quizzes;
+    }
+
+    // Learner case
+    if (Number(roleIdentifier) === constants.ROLES.LEARNER) {
       const enrollment = await Enrollment.findOne({
         user_id: userId,
         course_id: module.course_id._id,
@@ -58,12 +71,14 @@ class QuizService {
       if (!enrollment) {
         throw new Error("You must be enrolled to view this quiz");
       }
+
+      const quizzes = await Quiz.find({ module_id: moduleId });
+      return quizzes;
     }
 
-    const quiz = await Quiz.findOne({ module_id: moduleId });
-    if (!quiz) throw new Error("Quiz not found for this module");
-
-    return quiz;
+    // Fallback (for other roles)
+    const quizzes = await Quiz.find({ module_id: moduleId });
+    return quizzes;
   }
 
   //  Update quiz (Instructor only)

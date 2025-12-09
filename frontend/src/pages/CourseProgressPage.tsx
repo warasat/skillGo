@@ -9,11 +9,12 @@ import type { ModuleResponse } from "../types/module";
 import type { Lesson } from "../types/lesson";
 
 import CourseInfo from "../components/CourseInfo";
-import ModuleInfo from "../components/ModuleInfo";
 import LessonInfo from "../components/LessonInfo";
+import QuizAttempt from "../components/QuizAttempt";
 
 import { GrChapterAdd } from "react-icons/gr";
 import { BiBookOpen } from "react-icons/bi";
+import { PiExamThin } from "react-icons/pi";
 
 const CourseProgressPage = () => {
   const { courseId } = useParams();
@@ -29,7 +30,10 @@ const CourseProgressPage = () => {
 
   const [openModuleId, setOpenModuleId] = useState<string | null>(null);
 
-  // Fetch course by ID on mount
+  // STATE for quiz handling
+  const [showQuiz, setShowQuiz] = useState(false);
+
+  // Fetch course and modules
   useEffect(() => {
     if (!courseId) return;
 
@@ -39,10 +43,8 @@ const CourseProgressPage = () => {
         const courseData = res.data as Course;
         setSelectedCourse(courseData);
 
-        // Fetch modules for this course
         if (courseData._id) {
           const moduleRes = await getModulesByCourse(courseData._id);
-          console.log("Modules fetched:", moduleRes);
           setModules(moduleRes || []);
         }
       } catch (err) {
@@ -57,6 +59,7 @@ const CourseProgressPage = () => {
   const handleModuleClick = async (module: ModuleResponse) => {
     setSelectedModule(module);
     setSelectedLesson(null);
+    setShowQuiz(false);
 
     if (openModuleId === module._id) {
       setOpenModuleId(null);
@@ -77,6 +80,14 @@ const CourseProgressPage = () => {
   // Handle lesson click
   const handleLessonClick = (lesson: Lesson) => {
     setSelectedLesson(lesson);
+    setShowQuiz(false);
+  };
+
+  // Handle quiz view trigger
+  const handleShowQuiz = (module: ModuleResponse) => {
+    setSelectedModule(module);
+    setSelectedLesson(null);
+    setShowQuiz(true);
   };
 
   return (
@@ -101,12 +112,12 @@ const CourseProgressPage = () => {
 
                   {/* Lessons */}
                   {openModuleId === module._id && (
-                    <div className="ml-4 mt-1 space-y-1">
+                    <div className="ml-4 mt-1 space-y-2">
                       {lessons.length > 0 ? (
                         lessons.map((lesson) => (
                           <div
                             key={lesson._id}
-                            className="cursor-pointer text-sm text-gray-600 hover:text-blue-400 flex item-center gap-2"
+                            className="cursor-pointer text-sm text-gray-600 hover:text-blue-400 flex items-center gap-2"
                             onClick={() => handleLessonClick(lesson)}
                           >
                             <BiBookOpen />
@@ -117,6 +128,17 @@ const CourseProgressPage = () => {
                         <p className="text-xs text-gray-400 ml-2">
                           No lessons found
                         </p>
+                      )}
+
+                      {/* Single Attempt Quiz button for the module */}
+                      {selectedModule && (
+                        <button
+                          onClick={() => handleShowQuiz(selectedModule)}
+                          className="cursor-pointer text-sm text-gray-600 hover:text-green-400 flex items-center gap-2"
+                        >
+                          <PiExamThin />
+                          Attempt Quiz
+                        </button>
                       )}
                     </div>
                   )}
@@ -131,10 +153,21 @@ const CourseProgressPage = () => {
     >
       {/* Main content */}
       <div className="p-4">
-        {selectedLesson ? (
+        {showQuiz && selectedModule ? (
+          <QuizAttempt
+            moduleId={selectedModule._id}
+            onBack={() => setShowQuiz(false)}
+          />
+        ) : selectedLesson ? (
           <LessonInfo lesson={selectedLesson} />
         ) : selectedModule ? (
-          <ModuleInfo module={selectedModule} />
+          <div>
+            {/* ModuleInfo removed Attempt Quiz button */}
+            <h2 className="text-xl font-semibold mb-2">
+              {selectedModule.title}
+            </h2>
+            <p className="text-gray-600">{selectedModule.description}</p>
+          </div>
         ) : selectedCourse ? (
           <CourseInfo course={selectedCourse} />
         ) : (

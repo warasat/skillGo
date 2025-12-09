@@ -20,6 +20,16 @@ const API_CONSTANTS = {
   module: {
     create: "/modules/create-module",
   },
+  quiz: {
+    getByModule: "/quizzes/module",
+
+    submitAttempt: "/quiz-attempt/submit",
+
+    getAttemptByQuiz: "/quiz-attempt",
+    createQuiz: "/quizzes/create-quiz",
+    updateQuiz: "/quizzes",
+    deleteQuiz: "/quizzes",
+  },
 };
 
 export default API_CONSTANTS;
