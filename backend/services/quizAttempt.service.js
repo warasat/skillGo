@@ -14,7 +14,6 @@ class QuizAttemptService {
     const quiz = await Quiz.findById(quizId).populate("module_id");
     if (!quiz) throw new Error("Quiz not found");
 
-    // Check learner enrollment in related course
     const module = await Module.findById(quiz.module_id._id).populate(
       "course_id"
     );
@@ -26,7 +25,6 @@ class QuizAttemptService {
     if (!enrollment)
       throw new Error("You must be enrolled to attempt this quiz");
 
-    // Evaluate answers
     let score = 0;
     const evaluatedAnswers = quiz.questions.map((q, index) => {
       const submitted = answers.find((a) => a.questionIndex === index);
@@ -43,8 +41,9 @@ class QuizAttemptService {
     });
 
     const totalQuestions = quiz.questions.length;
+    const percentage = (score / totalQuestions) * 100;
+    const passed = percentage >= 70;
 
-    // Save attempt
     const attempt = await QuizAttempt.create({
       user_id: userId,
       quiz_id: quizId,
@@ -58,7 +57,8 @@ class QuizAttemptService {
       message: "Quiz submitted successfully",
       score,
       totalQuestions,
-      percentage: ((score / totalQuestions) * 100).toFixed(2),
+      percentage: percentage.toFixed(2),
+      passed,
       attempt,
     };
   }

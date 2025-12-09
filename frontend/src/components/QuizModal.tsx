@@ -134,7 +134,7 @@ const QuizModal = ({
               {questions.length > 1 && (
                 <button
                   onClick={() => removeQuestion(qIndex)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-red-500 hover:text-red-700 cursor-pointer"
                 >
                   Remove
                 </button>
@@ -177,21 +177,21 @@ const QuizModal = ({
         <div className="flex justify-between items-center mt-4">
           <button
             onClick={addQuestion}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
           >
             Add Question
           </button>
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
             >
               {quiz ? "Update Quiz" : "Create Quiz"}
             </button>

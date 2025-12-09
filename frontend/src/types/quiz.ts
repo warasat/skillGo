@@ -21,6 +21,8 @@ export interface QuizAttemptResult {
   score: number;
   totalQuestions: number;
   percentage: string;
+  attempt?: any;
+  passed?: boolean;
 }
 export interface QuizCreatePayload {
   module_id: string;
