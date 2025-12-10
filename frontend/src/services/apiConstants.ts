@@ -25,7 +25,7 @@ const API_CONSTANTS = {
 
     submitAttempt: "/quiz-attempt/submit",
 
-    getAttemptByQuiz: "/quiz-attempt",
+    getAttemptByQuiz: "/quiz-attempt/all",
     createQuiz: "/quizzes/create-quiz",
     updateQuiz: "/quizzes",
     deleteQuiz: "/quizzes",

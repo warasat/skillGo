@@ -23,12 +23,13 @@ router.post("/submit", authMiddleware([3]), async (req, res) => {
   }
 });
 
-router.get("/:quizId", authMiddleware([3]), async (req, res) => {
+router.get("/all/:quizId", authMiddleware([3]), async (req, res) => {
   try {
     const userId = req.user.id;
     const { quizId } = req.params;
-    const attempt = await QuizAttemptService.getAttemptByQuiz(userId, quizId);
-    res.status(200).json({ success: true, data: attempt });
+    const attempts = await QuizAttemptService.getAttemptByQuiz(userId, quizId);
+
+    res.status(200).json({ success: true, data: attempts });
   } catch (error) {
     res.status(404).json({ success: false, message: error.message });
   }

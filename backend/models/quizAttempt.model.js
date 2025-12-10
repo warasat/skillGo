@@ -26,6 +26,8 @@ const quizAttemptSchema = new mongoose.Schema({
   totalQuestions: { type: Number, required: true },
   answers: [answerSchema],
   submittedAt: { type: Date, default: Date.now },
+  passStatus: { type: Boolean, default: 0 },
+  percentage: { type: Number, default: 0 },
 });
 
 export default mongoose.model("QuizAttempt", quizAttemptSchema);

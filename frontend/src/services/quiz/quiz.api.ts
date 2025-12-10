@@ -25,9 +25,9 @@ export const submitQuizAttempt = async (payload: {
 
 export const getQuizAttemptByQuiz = async (
   quizId: string
-): Promise<QuizAttemptResult | null> => {
+): Promise<QuizAttemptResult[] | []> => {
   const res = await API.get(`${API_CONSTANTS.quiz.getAttemptByQuiz}/${quizId}`);
-  return res.data.data;
+  return res.data.data || [];
 };
 
 export const createQuiz = async (payload: QuizCreatePayload): Promise<Quiz> => {

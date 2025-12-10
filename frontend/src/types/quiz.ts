@@ -20,9 +20,9 @@ export interface QuizAttemptResult {
   message: string;
   score: number;
   totalQuestions: number;
-  percentage: string;
+  percentage: number;
   attempt?: any;
-  passed?: boolean;
+  passStatus?: boolean;
 }
 export interface QuizCreatePayload {
   module_id: string;
