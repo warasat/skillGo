@@ -32,11 +32,10 @@ const QuizAttempt = ({ moduleId, onBack }: QuizAttemptProps) => {
         if (firstQuiz?._id) {
           try {
             const attemptsData = await getQuizAttemptByQuiz(firstQuiz._id);
-            setAttempts(attemptsData.slice(0, 3)); // only first 3 attempts
+            setAttempts(attemptsData.slice(0, 3));
           } catch (err: any) {
-            // Agar 404 ya no attempts
             if (err.response && err.response.status === 404) {
-              setAttempts([]); // no attempts yet
+              setAttempts([]);
             } else {
               console.error("Error fetching attempts:", err);
             }
@@ -49,8 +48,6 @@ const QuizAttempt = ({ moduleId, onBack }: QuizAttemptProps) => {
 
     if (moduleId) fetchQuizAndAttempts();
   }, [moduleId]);
-
-  console.log("_______________Attempts: ", attempts);
 
   const handleSelect = (questionIndex: number, selectedOptionIndex: number) => {
     setAnswers((prev) => {
@@ -90,7 +87,7 @@ const QuizAttempt = ({ moduleId, onBack }: QuizAttemptProps) => {
 
   return (
     <div className="p-6 bg-white rounded shadow relative">
-      {/* 🔙 Back Button */}
+      {/*  Back Button */}
       <div
         onClick={onBack}
         className="flex items-center gap-1 text-blue-600 cursor-pointer mb-4 hover:underline w-fit"
@@ -99,7 +96,7 @@ const QuizAttempt = ({ moduleId, onBack }: QuizAttemptProps) => {
         <span className="text-sm font-medium">Back to Module</span>
       </div>
 
-      {/* 🧾 Header */}
+      {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Quiz for Module</h2>
 
@@ -117,7 +114,7 @@ const QuizAttempt = ({ moduleId, onBack }: QuizAttemptProps) => {
         </div>
       </div>
 
-      {/* 📊 Show Attempts */}
+      {/*  Show Attempts */}
       {showAttempts ? (
         <div className="space-y-4">
           <h3 className="font-semibold text-lg text-gray-800 mb-3">
@@ -127,7 +124,7 @@ const QuizAttempt = ({ moduleId, onBack }: QuizAttemptProps) => {
           {attempts.length > 0 ? (
             attempts.slice(0, 3).map((a, index) => (
               <div
-                key={index} // ✅ fixed key (no a._id issue)
+                key={index}
                 className={`p-5 border rounded-xl shadow-sm ${
                   a.passStatus
                     ? "bg-green-50 border-green-300"
@@ -143,7 +140,7 @@ const QuizAttempt = ({ moduleId, onBack }: QuizAttemptProps) => {
                     Attempt #{attempts.length - index}
                   </h4>
 
-                  {/* ✅ Clear Passed / Failed label */}
+                  {/*  Clear Passed / Failed label */}
                   <span
                     className={`text-sm font-semibold ${
                       a.passStatus ? "text-green-600" : "text-red-600"

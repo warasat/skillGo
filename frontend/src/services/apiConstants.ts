@@ -30,6 +30,11 @@ const API_CONSTANTS = {
     updateQuiz: "/quizzes",
     deleteQuiz: "/quizzes",
   },
+  dashboard: {
+    coursesCount: "/dashboard/courses-count",
+    learnersCount: "/dashboard/learners-count",
+    coursesByCategory: "/dashboard/courses-by-category",
+  },
 };
 
 export default API_CONSTANTS;

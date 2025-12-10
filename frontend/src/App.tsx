@@ -32,7 +32,7 @@ const App = () => {
         }
       />
 
-      {/* ✅ Course page only for Learner now */}
+      {/*  Course page only for Learner now */}
       {user?.role?.role === "learner" && (
         <Route
           path="/portal/course"
