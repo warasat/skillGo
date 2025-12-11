@@ -34,6 +34,12 @@ const API_CONSTANTS = {
     coursesCount: "/dashboard/courses-count",
     learnersCount: "/dashboard/learners-count",
     coursesByCategory: "/dashboard/courses-by-category",
+    topCategories: "/dashboard/top-categories",
+    earnings: "/dashboard/earnings",
+  },
+  adminDashboard: {
+    dashboardStats: "/admin-dashboard/dashboard-stats",
+    userStats: "/admin-dashboard/user-stats",
   },
 };
 

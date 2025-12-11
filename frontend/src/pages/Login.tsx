@@ -45,7 +45,11 @@ const Login = () => {
       setTokenInLocalStorage(token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      window.location.href = "/portal";
+      if (user?.role?.role === "admin") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/portal";
+      }
     } catch (err: any) {
       console.error("Login error:", err);
       setError(err?.response?.data?.message || err.message || "Login failed");

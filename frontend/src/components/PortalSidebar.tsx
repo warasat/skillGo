@@ -21,30 +21,38 @@ const PortalSidebar = () => {
     navigate("/login");
   };
 
-  const menuItems = [
-    { to: "/portal", label: "Portal", icon: <LuLayoutDashboard /> },
+  // Role-based menu items
+  let menuItems = [];
 
-    ...(user?.role?.role === "learner"
-      ? [{ to: "/portal/course", label: "Courses", icon: <LuBookOpen /> }]
-      : []),
-    { to: "/portal/profile", label: "Profile", icon: <FaRegUser /> },
-    { to: "/portal/setting", label: "Settings", icon: <IoSettingsOutline /> },
-  ];
+  if (user?.role?.role === "admin") {
+    menuItems = [
+      { to: "/admin", label: "Admin Portal", icon: <LuLayoutDashboard /> },
+    ];
+  } else {
+    menuItems = [
+      { to: "/portal", label: "Portal", icon: <LuLayoutDashboard /> },
+      ...(user?.role?.role === "learner"
+        ? [{ to: "/portal/course", label: "Courses", icon: <LuBookOpen /> }]
+        : []),
+      { to: "/portal/profile", label: "Profile", icon: <FaRegUser /> },
+      { to: "/portal/setting", label: "Settings", icon: <IoSettingsOutline /> },
+    ];
 
-  if (user?.role?.role === "learner") {
-    menuItems.push({
-      to: "/portal/my-courses",
-      label: "My Courses",
-      icon: <LuBookOpenCheck />,
-    });
-  }
+    if (user?.role?.role === "learner") {
+      menuItems.push({
+        to: "/portal/my-courses",
+        label: "My Courses",
+        icon: <LuBookOpenCheck />,
+      });
+    }
 
-  if (user?.role?.role === "instructor") {
-    menuItems.push({
-      to: "/portal/courses",
-      label: "Courses",
-      icon: <LuBookOpenCheck />,
-    });
+    if (user?.role?.role === "instructor") {
+      menuItems.push({
+        to: "/portal/courses",
+        label: "Courses",
+        icon: <LuBookOpenCheck />,
+      });
+    }
   }
 
   return (

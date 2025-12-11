@@ -38,5 +38,37 @@ router.get("/courses-by-category", authMiddleware([2]), async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+router.get("/top-categories", authMiddleware([2]), async (req, res) => {
+  try {
+    const range = parseInt(req.query.range) || 30;
+    const data = await DashboardService.getTopCategoriesByEnrollments(range);
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Error fetching top categories:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
+router.get("/earnings", authMiddleware([2]), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const earnings = await DashboardService.getInstructorEarnings(userId);
+
+    res.status(200).json({
+      success: true,
+      data: earnings,
+    });
+  } catch (err) {
+    console.error("Error fetching earnings:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch earnings" });
+  }
+});
 
 export default router;

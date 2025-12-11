@@ -16,3 +16,15 @@ export const getInstructorCoursesByCategory = async (): Promise<
   const res = await API.get(API_CONSTANTS.dashboard.coursesByCategory);
   return res.data.data;
 };
+export const getTopCategoriesByEnrollments = async (
+  range: number = 30
+): Promise<{ category: string; totalEnrollments: number }[]> => {
+  const res = await API.get(
+    `${API_CONSTANTS.dashboard.topCategories}?range=${range}`
+  );
+  return res.data.data;
+};
+export const getInstructorEarnings = async (): Promise<number> => {
+  const res = await API.get(API_CONSTANTS.dashboard.earnings);
+  return res.data.data;
+};

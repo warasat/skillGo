@@ -1,4 +1,3 @@
-// ProtectedRoute.tsx
 import { Navigate } from "react-router";
 import { getUserFromLocalStorage } from "./utils";
 import type { ReactNode } from "react";

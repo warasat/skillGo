@@ -14,6 +14,8 @@ import MyOwnCourses from "./pages/MyOwnCourse";
 import CourseDetails from "./pages/CourseDetails";
 import ModuleDetails from "./pages/ModuleDetails";
 import CourseProgressPage from "./pages/CourseProgressPage";
+import AdminPortal from "./pages/AdminPortal";
+import RoleGuard from "./utils/RoleGuard";
 
 const App = () => {
   const user: User | null = getUserFromLocalStorage();
@@ -31,7 +33,19 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <RoleGuard
+              allowedRoles={["admin"]}
+              fallback={<div>Access Denied</div>}
+            >
+              <AdminPortal />
+            </RoleGuard>
+          </ProtectedRoute>
+        }
+      />
       {/*  Course page only for Learner now */}
       {user?.role?.role === "learner" && (
         <Route

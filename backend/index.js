@@ -14,6 +14,7 @@ import categoryRoutes from "./routes/category.route.js";
 import getUserRoutes from "./routes/getUser.route.js";
 import quizAttemptRoutes from "./routes/quizAttempt.route.js";
 import dashboardRoutes from "./routes/dashboard.route.js";
+import adminDashboardRoutes from "./routes/adminDashboard.route.js";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/users", getUserRoutes);
 app.use("/api/quiz-attempt", quizAttemptRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/admin-dashboard", adminDashboardRoutes);
 
 app.get("/", (req, res) => {
   res.json("Server is running");
