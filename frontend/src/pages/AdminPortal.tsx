@@ -30,7 +30,7 @@ const AdminPortal = () => {
   return (
     <PortalLayout>
       {/* Parent Wrapper */}
-      <div className="p-8 space-y-8">
+      <div className="p-6 space-y-6">
         {/* Cards Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-green-100 shadow-md p-6 rounded-xl border border-green-200">
@@ -59,11 +59,13 @@ const AdminPortal = () => {
         </div>
 
         {/* Chart Section */}
-        <div className="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="bg-white p-4 rounded-xl shadow-md border border-gray-200 h-full w-full  overflow-hidden ">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
             User Registration Trend
           </h3>
-          <AdminUsersLineChart />
+          <div className="">
+            <AdminUsersLineChart />
+          </div>
         </div>
       </div>
     </PortalLayout>

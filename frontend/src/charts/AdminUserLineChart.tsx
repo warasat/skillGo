@@ -51,12 +51,20 @@ const AdminUsersLineChart = () => {
 
   const options = {
     responsive: true,
+
     plugins: {
       legend: { position: "top" as const },
       title: { display: true, text: "User Registration Trend (Last 30 Days)" },
     },
     scales: {
-      y: { beginAtZero: true },
+      y: {
+        beginAtZero: true,
+        stepSize: 2,
+        max: Math.max(...data.map((d) => d.total)) + 2,
+        ticks: {
+          stepSize: 2,
+        },
+      },
     },
   };
 
