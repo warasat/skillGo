@@ -27,6 +27,11 @@ const PortalSidebar = () => {
   if (user?.role?.role === "admin") {
     menuItems = [
       { to: "/admin", label: "Admin Portal", icon: <LuLayoutDashboard /> },
+      {
+        to: "/admin/user-management",
+        label: "User Management",
+        icon: <LuBookOpen />,
+      },
     ];
   } else {
     menuItems = [
@@ -60,10 +65,17 @@ const PortalSidebar = () => {
       {/* Menu Items */}
       <div className="space-y-2">
         {menuItems.map((item) => {
-          const isActive =
-            location.pathname === item.to ||
-            (item.to !== "/portal" &&
-              location.pathname.startsWith(item.to + "/"));
+          const isActive = (() => {
+            if (item.to === "/admin") {
+              return location.pathname === "/admin";
+            }
+            return (
+              location.pathname === item.to ||
+              (item.to !== "/portal" &&
+                location.pathname.startsWith(item.to + "/"))
+            );
+          })();
+
           return (
             <Link
               key={item.to}

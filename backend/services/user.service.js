@@ -56,6 +56,14 @@ class UserService {
       const userResponse = user.toObject();
       delete userResponse.password;
 
+      //  Check status
+      if (user.status === "inactive") {
+        return res.status(401).json({
+          success: false,
+          message: "Your account is deactivated. Contact admin.",
+        });
+      }
+
       const token = jwt.sign(
         {
           userId: user._id,

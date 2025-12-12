@@ -22,6 +22,11 @@ const userSchema = new Schema(
       ref: "Role",
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
   { timestamps: true }
 );

@@ -84,14 +84,18 @@ const PortalHeader: React.FC = () => {
           {/* Dropdown menu */}
           {dropdownOpen && (
             <div className="absolute top-full mt-2 right-0 w-40 bg-white border rounded shadow-lg flex flex-col z-50">
-              <button
-                onClick={handleProfile}
-                className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 text-left cursor-pointer"
-                style={{ color: `#${CONSTANTS.color_constants.headings.hex}` }}
-              >
-                <FaRegUser />
-                <span>Profile</span>
-              </button>
+              {role !== "admin" && (
+                <button
+                  onClick={handleProfile}
+                  className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 text-left cursor-pointer"
+                  style={{
+                    color: `#${CONSTANTS.color_constants.headings.hex}`,
+                  }}
+                >
+                  <FaRegUser />
+                  <span>Profile</span>
+                </button>
+              )}
 
               <button
                 onClick={handleLogout}

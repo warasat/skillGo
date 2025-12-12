@@ -16,6 +16,7 @@ import ModuleDetails from "./pages/ModuleDetails";
 import CourseProgressPage from "./pages/CourseProgressPage";
 import AdminPortal from "./pages/AdminPortal";
 import RoleGuard from "./utils/RoleGuard";
+import UserManagement from "./pages/UserManagement";
 
 const App = () => {
   const user: User | null = getUserFromLocalStorage();
@@ -46,6 +47,20 @@ const App = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/user-management"
+        element={
+          <ProtectedRoute>
+            <RoleGuard
+              allowedRoles={["admin"]}
+              fallback={<div>Access Denied</div>}
+            >
+              <UserManagement />
+            </RoleGuard>
+          </ProtectedRoute>
+        }
+      />
+
       {/*  Course page only for Learner now */}
       {user?.role?.role === "learner" && (
         <Route

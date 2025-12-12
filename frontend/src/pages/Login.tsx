@@ -52,6 +52,11 @@ const Login = () => {
       }
     } catch (err: any) {
       console.error("Login error:", err);
+      //  Special handling for inactive user
+      if (err.response?.status === 401) {
+        setError("Your account is deactivated. Contact admin.");
+        return;
+      }
       setError(err?.response?.data?.message || err.message || "Login failed");
     }
   };
