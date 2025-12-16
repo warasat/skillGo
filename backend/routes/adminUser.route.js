@@ -37,5 +37,28 @@ router.patch("/users/:id/status", async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 });
+//  Update user role
+router.patch("/users/:id/role", authMiddleware([1]), async (req, res) => {
+  try {
+    const { roleId } = req.body;
+    if (!roleId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Role ID is required" });
+    }
+
+    const updatedUser = await adminUserService.updateUserRole(
+      req.params.id,
+      roleId
+    );
+    res.status(200).json({
+      success: true,
+      message: "Role updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
 
 export default router;

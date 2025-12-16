@@ -10,6 +10,8 @@ import { LuBookOpen } from "react-icons/lu";
 import { LuBookOpenCheck } from "react-icons/lu";
 import { FaRegUser } from "react-icons/fa";
 import { IoSettingsOutline } from "react-icons/io5";
+import { GiLibertyWing } from "react-icons/gi";
+import { MdOutlineManageAccounts } from "react-icons/md";
 
 const PortalSidebar = () => {
   const user = getUserFromLocalStorage();
@@ -31,6 +33,16 @@ const PortalSidebar = () => {
         to: "/admin/user-management",
         label: "User Management",
         icon: <LuBookOpen />,
+      },
+      {
+        to: "/admin/permission-policies",
+        label: "Permission Policies",
+        icon: <GiLibertyWing />,
+      },
+      {
+        to: "/admin/role-management",
+        label: "Role Management",
+        icon: <MdOutlineManageAccounts />,
       },
     ];
   } else {

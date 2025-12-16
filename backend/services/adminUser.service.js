@@ -30,6 +30,21 @@ class AdminUserService {
 
     return user;
   }
+  //Update role of a user
+  async updateUserRole(userId, roleId) {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    user.role = roleId;
+    await user.save();
+
+    // populate for frontend readability
+    const updatedUser = await User.findById(userId)
+      .select("-password")
+      .populate("role");
+
+    return updatedUser;
+  }
 }
 
 export default new AdminUserService();

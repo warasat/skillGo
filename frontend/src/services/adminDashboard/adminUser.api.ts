@@ -10,6 +10,7 @@ export type User = {
 
 export const getAllUsers = async () => {
   const response = await API.get("/admin/users");
+
   return response.data.data;
 };
 
@@ -22,5 +23,12 @@ export const updateUserStatus = async (
   status: "active" | "inactive"
 ) => {
   const response = await API.patch(`/admin/users/${userId}/status`, { status });
+  return response.data.data;
+};
+export const updateUserRole = async (
+  userId: string,
+  roleId: string
+): Promise<User> => {
+  const response = await API.patch(`/admin/users/${userId}/role`, { roleId });
   return response.data.data;
 };

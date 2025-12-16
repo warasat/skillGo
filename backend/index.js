@@ -16,6 +16,9 @@ import quizAttemptRoutes from "./routes/quizAttempt.route.js";
 import dashboardRoutes from "./routes/dashboard.route.js";
 import adminDashboardRoutes from "./routes/adminDashboard.route.js";
 import adminUserRoutes from "./routes/adminUser.route.js";
+import roleRoutes from "./routes/role.route.js";
+import permissionRoutes from "./routes/permission.route.js";
+import roleManagementRouter from "./routes/roleManagement.route.js";
 
 dotenv.config();
 
@@ -44,6 +47,9 @@ app.use("/api/quiz-attempt", quizAttemptRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin-dashboard", adminDashboardRoutes);
 app.use("/api/admin", adminUserRoutes);
+app.use("/api/admin", roleRoutes);
+app.use("/api/permissions", permissionRoutes);
+app.use("/api/role-management", roleManagementRouter);
 
 app.get("/", (req, res) => {
   res.json("Server is running");

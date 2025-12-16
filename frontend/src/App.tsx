@@ -17,6 +17,8 @@ import CourseProgressPage from "./pages/CourseProgressPage";
 import AdminPortal from "./pages/AdminPortal";
 import RoleGuard from "./utils/RoleGuard";
 import UserManagement from "./pages/UserManagement";
+import PermissionPolicy from "./pages/PermissionPolicy";
+import RoleManagement from "./pages/RoleManagement";
 
 const App = () => {
   const user: User | null = getUserFromLocalStorage();
@@ -56,6 +58,32 @@ const App = () => {
               fallback={<div>Access Denied</div>}
             >
               <UserManagement />
+            </RoleGuard>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/permission-policies"
+        element={
+          <ProtectedRoute>
+            <RoleGuard
+              allowedRoles={["admin"]}
+              fallback={<div>Access Denied</div>}
+            >
+              <PermissionPolicy />
+            </RoleGuard>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/role-management"
+        element={
+          <ProtectedRoute>
+            <RoleGuard
+              allowedRoles={["admin"]}
+              fallback={<div>Access Denied</div>}
+            >
+              <RoleManagement />
             </RoleGuard>
           </ProtectedRoute>
         }
