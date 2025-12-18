@@ -12,14 +12,16 @@ import CreateRoleModal from "../components/RoleModal";
 import EditRoleModal from "../components/EditRoleModal";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { PiToggleLeftFill, PiToggleRightFill } from "react-icons/pi";
+import { getUserFromLocalStorage } from "../utils/utils";
 
 interface User {
   _id: string;
   name: string;
   email: string;
-  role: string; // store role _id
+  role: string | { _id: string; role: string; identifier: number };
   status: "active" | "inactive";
   createdAt: string;
+  permissions?: string[];
 }
 
 interface Role {
@@ -45,6 +47,15 @@ const UserManagement = () => {
 
   // Create role modal
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+
+  const currentUser = getUserFromLocalStorage();
+  const roleName =
+    typeof currentUser?.role === "object"
+      ? currentUser.role.role
+      : currentUser?.role;
+  const isSubAdmin = roleName === "sub-admin";
+  const isAdmin = roleName === "admin";
+  const canDelete = currentUser?.permissions?.includes("deleteuser") ?? false;
 
   // Fetch users
   const fetchUsers = async () => {
@@ -146,14 +157,16 @@ const UserManagement = () => {
         <h1 className="text-2xl font-bold mb-4">User Management</h1>
 
         {/* Create Role Button */}
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={() => setIsRoleModalOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
-          >
-            Create Role
-          </button>
-        </div>
+        {isAdmin && (
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setIsRoleModalOpen(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
+            >
+              Create Role
+            </button>
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 text-gray-700">
@@ -191,7 +204,13 @@ const UserManagement = () => {
                       {user.email}
                     </td>
                     <td className="px-4 py-2 border-r border-gray-200 capitalize">
-                      {roles.find((r) => r._id === user.role)?.role || "N/A"}
+                      {roles.find(
+                        (r) =>
+                          r._id ===
+                          (typeof user.role === "string"
+                            ? user.role
+                            : user.role._id)
+                      )?.role || "N/A"}
                     </td>
                     <td className="px-4 py-2 border-r border-gray-200 capitalize">
                       <span
@@ -208,46 +227,66 @@ const UserManagement = () => {
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-2 flex gap-3 items-center justify-center">
-                      {/* Status Toggle */}
-                      <button
-                        onClick={() =>
-                          handleStatusToggle(
-                            user._id,
-                            user.status === "active" ? "inactive" : "active"
-                          )
-                        }
-                        className={`transition-transform hover:scale-110 ${
-                          user.status === "active"
-                            ? "text-green-600"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {user.status === "active" ? (
-                          <PiToggleRightFill className="text-2xl" />
-                        ) : (
-                          <PiToggleLeftFill className="text-2xl" />
-                        )}
-                      </button>
+                      {/* Show only delete for sub-admin */}
+                      {isSubAdmin ? (
+                        canDelete && (
+                          <button
+                            onClick={() => openDeleteModal(user._id)}
+                            className="text-red-600 hover:text-red-800 transition-transform hover:scale-110 cursor-pointer"
+                          >
+                            <RiDeleteBin5Line className="text-lg" />
+                          </button>
+                        )
+                      ) : (
+                        <>
+                          {/* Status Toggle */}
+                          <button
+                            onClick={() =>
+                              handleStatusToggle(
+                                user._id,
+                                user.status === "active" ? "inactive" : "active"
+                              )
+                            }
+                            className={`transition-transform hover:scale-110 ${
+                              user.status === "active"
+                                ? "text-green-600"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {user.status === "active" ? (
+                              <PiToggleRightFill className="text-2xl" />
+                            ) : (
+                              <PiToggleLeftFill className="text-2xl" />
+                            )}
+                          </button>
 
-                      {/* Role button */}
-                      <button
-                        onClick={() => {
-                          setEditingRoleUserId(user._id);
-                          setEditingRole(user.role);
-                          setIsRoleEditModalOpen(true);
-                        }}
-                        className="px-3 py-1 text-purple-500 hover:text-purple-700 rounded text-sm cursor-pointer"
-                      >
-                        Role
-                      </button>
+                          {/* Role button */}
+                          <button
+                            onClick={() => {
+                              setEditingRoleUserId(user._id);
+                              setEditingRole(
+                                typeof user.role === "string"
+                                  ? user.role
+                                  : user.role._id
+                              );
+                              setIsRoleEditModalOpen(true);
+                            }}
+                            className="px-3 py-1 text-purple-500 hover:text-purple-700 rounded text-sm cursor-pointer"
+                          >
+                            Role
+                          </button>
 
-                      {/* Delete */}
-                      <button
-                        onClick={() => openDeleteModal(user._id)}
-                        className="text-red-600 hover:text-red-800 transition-transform hover:scale-110"
-                      >
-                        <RiDeleteBin5Line className="text-lg" />
-                      </button>
+                          {/* Delete */}
+                          {canDelete && (
+                            <button
+                              onClick={() => openDeleteModal(user._id)}
+                              className="text-red-600 hover:text-red-800 transition-transform hover:scale-110 cursor-pointer"
+                            >
+                              <RiDeleteBin5Line className="text-lg" />
+                            </button>
+                          )}
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))

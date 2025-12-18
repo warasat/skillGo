@@ -12,21 +12,22 @@ class RolePermissionService {
   static async assignPermissionsToRole(roleId, permissionIds) {
     if (!roleId) throw new Error("Role ID is required");
 
-    // Find existing mapping
     let rolePermission = await RolePermission.findOne({ roleId });
+
     if (rolePermission) {
       rolePermission.permissionIds = permissionIds;
       await rolePermission.save();
     } else {
-      rolePermission = await RolePermission.create({
-        roleId,
-        permissionIds,
-      });
+      rolePermission = await RolePermission.create({ roleId, permissionIds });
     }
 
-    return rolePermission
-      .populate("roleId", "role")
-      .populate("permissionIds", "title");
+    // ✅ Proper population — use await once, not chained
+    rolePermission = await rolePermission.populate([
+      { path: "roleId", select: "role" },
+      { path: "permissionIds", select: "title permissions description" },
+    ]);
+
+    return rolePermission;
   }
 
   // Get permissions of a single role

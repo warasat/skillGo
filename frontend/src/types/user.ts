@@ -8,7 +8,10 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  role: UserRole; // <-- object now
+  role: UserRole;
   status: "active" | "inactive";
+  permissions: string[];
+  roleUpdatedAt: string;
+
   createdAt: string;
 }

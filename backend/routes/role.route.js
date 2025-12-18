@@ -6,31 +6,36 @@ import adminMiddleware from "../middlewares/admin.middleware.js";
 const router = express.Router();
 
 // CREATE ROLE (ADMIN ONLY)
-router.post("/roles", authMiddleware(), adminMiddleware, async (req, res) => {
-  try {
-    const { role } = req.body;
+router.post(
+  "/roles",
+  authMiddleware(1, 4),
+  adminMiddleware,
+  async (req, res) => {
+    try {
+      const { role } = req.body;
 
-    if (!role) {
-      return res.status(400).json({
+      if (!role) {
+        return res.status(400).json({
+          success: false,
+          message: "Role name is required",
+        });
+      }
+
+      const newRole = await roleService.createRole(role);
+
+      res.status(201).json({
+        success: true,
+        message: "Role created successfully",
+        data: newRole,
+      });
+    } catch (error) {
+      res.status(400).json({
         success: false,
-        message: "Role name is required",
+        message: error.message,
       });
     }
-
-    const newRole = await roleService.createRole(role);
-
-    res.status(201).json({
-      success: true,
-      message: "Role created successfully",
-      data: newRole,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
   }
-});
+);
 
 // GET ALL ROLES (ADMIN ONLY)
 router.get("/roles", authMiddleware(), adminMiddleware, async (req, res) => {

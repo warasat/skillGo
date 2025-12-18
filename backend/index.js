@@ -19,6 +19,7 @@ import adminUserRoutes from "./routes/adminUser.route.js";
 import roleRoutes from "./routes/role.route.js";
 import permissionRoutes from "./routes/permission.route.js";
 import roleManagementRouter from "./routes/roleManagement.route.js";
+import permissionVerifyRoute from "./routes/permissionVerify.route.js";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use("/api/admin", adminUserRoutes);
 app.use("/api/admin", roleRoutes);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/role-management", roleManagementRouter);
+app.use("/api/permissions", permissionVerifyRoute);
 
 app.get("/", (req, res) => {
   res.json("Server is running");

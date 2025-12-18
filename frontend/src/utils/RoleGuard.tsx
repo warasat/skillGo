@@ -10,7 +10,6 @@ interface RoleGuardProps {
 
 const RoleGuard = ({ children, allowedRoles, fallback }: RoleGuardProps) => {
   const user = getUserFromLocalStorage();
-  console.log(getUserFromLocalStorage());
 
   if (!user) {
     return <Navigate to="/login" replace />;

@@ -22,7 +22,6 @@ const Login = () => {
       .required("Password is required"),
   });
 
-  // React Hook Form setup
   const {
     register,
     handleSubmit,
@@ -32,7 +31,6 @@ const Login = () => {
     defaultValues: { email: "", password: "" },
   });
 
-  // Handle login submit
   const onSubmit = async (data: AuthLoginRequest) => {
     setError(null);
     try {
@@ -45,14 +43,15 @@ const Login = () => {
       setTokenInLocalStorage(token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (user?.role?.role === "admin") {
-        window.location.href = "/admin";
-      } else {
+      // Redirect based on role
+      const role = user?.role?.role;
+      if (role === "learner" || role === "instructor") {
         window.location.href = "/portal";
+      } else {
+        window.location.href = "/admin";
       }
     } catch (err: any) {
       console.error("Login error:", err);
-      //  Special handling for inactive user
       if (err.response?.status === 401) {
         setError("Your account is deactivated. Contact admin.");
         return;
@@ -66,23 +65,18 @@ const Login = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-        {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
             {error}
           </div>
         )}
-
-        {/* Success Message */}
         {response && (
           <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
             Login successful!
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Email */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Email</label>
             <input
@@ -108,7 +102,6 @@ const Login = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
               disabled={isSubmitting}
             />
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -123,7 +116,6 @@ const Login = () => {
             )}
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -133,7 +125,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Register Link */}
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{" "}

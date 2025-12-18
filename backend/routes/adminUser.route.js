@@ -4,7 +4,7 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/users", authMiddleware([1]), async (req, res) => {
+router.get("/users", authMiddleware([1, 4]), async (req, res) => {
   try {
     const users = await adminUserService.getAllUsers();
     res.status(200).json({ success: true, data: users });
@@ -13,7 +13,7 @@ router.get("/users", authMiddleware([1]), async (req, res) => {
   }
 });
 
-router.delete("/users/:id", authMiddleware([1]), async (req, res) => {
+router.delete("/users/:id", authMiddleware([1, 4]), async (req, res) => {
   try {
     const deletedUser = await adminUserService.deleteUser(req.params.id);
     if (!deletedUser)
@@ -47,10 +47,17 @@ router.patch("/users/:id/role", authMiddleware([1]), async (req, res) => {
         .json({ success: false, message: "Role ID is required" });
     }
 
+    // 1️⃣ Update the role
     const updatedUser = await adminUserService.updateUserRole(
       req.params.id,
       roleId
     );
+
+    // 2️⃣ Update the roleUpdatedAt timestamp
+    updatedUser.roleUpdatedAt = new Date();
+    await updatedUser.save(); // make sure your service/model supports this
+
+    // 3️⃣ Send response
     res.status(200).json({
       success: true,
       message: "Role updated successfully",

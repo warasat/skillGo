@@ -27,6 +27,8 @@ const userSchema = new Schema(
       enum: ["active", "inactive"],
       default: "active",
     },
+    // Example for Mongoose
+    roleUpdatedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

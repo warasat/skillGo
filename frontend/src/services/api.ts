@@ -30,7 +30,7 @@ API.interceptors.response.use(
     const message = error.response?.data?.message;
 
     // Check if user is inactive or unauthorized
-    if (status === 401 && message?.includes("deactivated")) {
+    if (status === 401 || message?.includes("deactivated")) {
       localStorage.removeItem("token");
 
       window.location.href = "/login";

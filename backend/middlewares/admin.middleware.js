@@ -1,7 +1,12 @@
 const ADMIN_IDENTIFIER = 1;
+const SUB_ADMIN_IDENTIFIER = 4;
 
 const adminMiddleware = (req, res, next) => {
-  if (!req.user || req.user.roleIdentifier !== ADMIN_IDENTIFIER) {
+  if (
+    !req.user ||
+    (req.user.roleIdentifier !== ADMIN_IDENTIFIER &&
+      req.user.roleIdentifier !== SUB_ADMIN_IDENTIFIER)
+  ) {
     return res.status(403).json({
       success: false,
       message: "Admin access only",

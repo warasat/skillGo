@@ -57,14 +57,19 @@ export const getUserFromLocalStorage = (): User | null => {
     ) {
       normalizedRole = rawUser.role as UserRole;
     } else {
-      // fallback
       normalizedRole = ROLE_MAP.learner;
     }
 
     return {
+      _id: rawUser._id,
       name: rawUser.name,
       email: rawUser.email,
       role: normalizedRole,
+      status: rawUser.status,
+      permissions: rawUser.permissions || [],
+      createdAt: rawUser.createdAt,
+      updatedAt: rawUser.updatedAt,
+      __v: rawUser.__v,
     };
   } catch {
     return null;

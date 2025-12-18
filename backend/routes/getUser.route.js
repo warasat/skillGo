@@ -15,8 +15,6 @@ router.get("/auth/me", authMiddleware(), async (req, res) => {
   try {
     const user = await getUserService.getUser(req.user.id);
 
-    console.log("-------userId", req.user.id);
-
     if (!user) {
       return res.status(404).json({
         success: false,

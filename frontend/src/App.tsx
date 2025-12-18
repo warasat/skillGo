@@ -20,11 +20,20 @@ import UserManagement from "./pages/UserManagement";
 import PermissionPolicy from "./pages/PermissionPolicy";
 import RoleManagement from "./pages/RoleManagement";
 
+// Step 1: Define base interface mapping
+const getBaseInterface = (role: string) => {
+  if (role === "learner") return "learner";
+  if (role === "instructor") return "instructor";
+  return "admin"; // All other roles use AdminInterface
+};
+
 const App = () => {
   const user: User | null = getUserFromLocalStorage();
+  const baseInterface = user ? getBaseInterface(user.role.role) : null;
 
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
@@ -36,71 +45,8 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <RoleGuard
-              allowedRoles={["admin"]}
-              fallback={<div>Access Denied</div>}
-            >
-              <AdminPortal />
-            </RoleGuard>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/user-management"
-        element={
-          <ProtectedRoute>
-            <RoleGuard
-              allowedRoles={["admin"]}
-              fallback={<div>Access Denied</div>}
-            >
-              <UserManagement />
-            </RoleGuard>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/permission-policies"
-        element={
-          <ProtectedRoute>
-            <RoleGuard
-              allowedRoles={["admin"]}
-              fallback={<div>Access Denied</div>}
-            >
-              <PermissionPolicy />
-            </RoleGuard>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/role-management"
-        element={
-          <ProtectedRoute>
-            <RoleGuard
-              allowedRoles={["admin"]}
-              fallback={<div>Access Denied</div>}
-            >
-              <RoleManagement />
-            </RoleGuard>
-          </ProtectedRoute>
-        }
-      />
 
-      {/*  Course page only for Learner now */}
-      {user?.role?.role === "learner" && (
-        <Route
-          path="/portal/course"
-          element={
-            <ProtectedRoute>
-              <GetCourses />
-            </ProtectedRoute>
-          }
-        />
-      )}
-
+      {/* Common Protected Routes */}
       <Route
         path="/portal/profile"
         element={
@@ -109,7 +55,6 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/portal/setting"
         element={
@@ -119,48 +64,143 @@ const App = () => {
         }
       />
 
-      <Route
-        path="/portal/my-courses"
-        element={
-          <ProtectedRoute>
-            {user?.role?.role === "learner" ? <MyCourses /> : <Portal />}
-          </ProtectedRoute>
-        }
-      />
+      {/* Learner Routes */}
+      {baseInterface === "learner" && (
+        <>
+          <Route
+            path="/portal/course"
+            element={
+              <ProtectedRoute>
+                <GetCourses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/my-courses"
+            element={
+              <ProtectedRoute>
+                <MyCourses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/my-courses/progress/:courseId"
+            element={
+              <ProtectedRoute>
+                <CourseProgressPage />
+              </ProtectedRoute>
+            }
+          />
+        </>
+      )}
 
-      <Route
-        path="/portal/courses"
-        element={
-          <ProtectedRoute>
-            {user?.role?.role === "instructor" && <MyOwnCourses />}
-          </ProtectedRoute>
-        }
-      />
+      {/* Instructor Routes */}
+      {baseInterface === "instructor" && (
+        <>
+          <Route
+            path="/portal/courses"
+            element={
+              <ProtectedRoute>
+                <MyOwnCourses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/courses/:courseId"
+            element={
+              <ProtectedRoute>
+                <CourseDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/courses/:CourseName/:moduleId"
+            element={
+              <ProtectedRoute>
+                <ModuleDetails />
+              </ProtectedRoute>
+            }
+          />
+        </>
+      )}
 
-      <Route
-        path="/portal/courses/:courseId"
-        element={
-          <ProtectedRoute>
-            <CourseDetails />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/portal/courses/:CourseName/:moduleId"
-        element={
-          <ProtectedRoute>
-            <ModuleDetails />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/portal/my-courses/progress/:courseId"
-        element={
-          <ProtectedRoute>
-            <CourseProgressPage />
-          </ProtectedRoute>
-        }
-      />
+      {/* Admin / Sub-Admin / Content-Manager / Senior-Manager / Others */}
+      {baseInterface === "admin" && (
+        <>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <RoleGuard
+                  allowedRoles={[
+                    "admin",
+                    "sub-admin",
+                    "content-manager",
+                    "senior-manager",
+                  ]}
+                  fallback={<div>Access Denied</div>}
+                >
+                  <AdminPortal />
+                </RoleGuard>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/user-management"
+            element={
+              <ProtectedRoute>
+                <RoleGuard
+                  allowedRoles={[
+                    "admin",
+                    "sub-admin",
+                    "content-manager",
+                    "senior-manager",
+                  ]}
+                  fallback={<div>Access Denied</div>}
+                >
+                  <UserManagement />
+                </RoleGuard>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/permission-policies"
+            element={
+              <ProtectedRoute>
+                <RoleGuard
+                  allowedRoles={[
+                    "admin",
+                    "sub-admin",
+                    "content-manager",
+                    "senior-manager",
+                  ]}
+                  fallback={<div>Access Denied</div>}
+                >
+                  <PermissionPolicy />
+                </RoleGuard>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/role-management"
+            element={
+              <ProtectedRoute>
+                <RoleGuard
+                  allowedRoles={[
+                    "admin",
+                    "sub-admin",
+                    "content-manager",
+                    "senior-manager",
+                  ]}
+                  fallback={<div>Access Denied</div>}
+                >
+                  <RoleManagement />
+                </RoleGuard>
+              </ProtectedRoute>
+            }
+          />
+        </>
+      )}
     </Routes>
   );
 };

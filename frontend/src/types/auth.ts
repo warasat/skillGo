@@ -29,13 +29,21 @@ export interface AuthLoginResponse {
   message: string;
   data: {
     user: {
+      _id: string;
       name: string;
       email: string;
       role: {
+        _id: string;
         identifier: number;
         role: string;
       };
+      status: "active" | "inactive";
+      permissions: string[];
+      createdAt: string;
+      updatedAt: string;
+      __v: number;
     };
     token: string;
+    roleIdentifier: number;
   };
 }

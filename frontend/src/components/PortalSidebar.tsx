@@ -23,9 +23,10 @@ const PortalSidebar = () => {
     navigate("/login");
   };
 
-  // Role-based menu items
+  // 🧩 Role-based menu configuration
   let menuItems = [];
 
+  // --- Admin (full access) ---
   if (user?.role?.role === "admin") {
     menuItems = [
       { to: "/admin", label: "Admin Portal", icon: <LuLayoutDashboard /> },
@@ -45,7 +46,20 @@ const PortalSidebar = () => {
         icon: <MdOutlineManageAccounts />,
       },
     ];
-  } else {
+  }
+  // --- Sub-Admin (limited access) ---
+  else if (user?.role?.role === "sub-admin") {
+    menuItems = [
+      { to: "/admin", label: "Admin Portal", icon: <LuLayoutDashboard /> },
+      {
+        to: "/admin/user-management",
+        label: "User Management",
+        icon: <LuBookOpen />,
+      },
+    ];
+  }
+  // --- Other roles (instructor / learner) ---
+  else {
     menuItems = [
       { to: "/portal", label: "Portal", icon: <LuLayoutDashboard /> },
       ...(user?.role?.role === "learner"

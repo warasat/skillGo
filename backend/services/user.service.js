@@ -1,10 +1,11 @@
 import User from "../models/user.model.js";
 import Role from "../models/role.model.js";
+import RolePermission from "../models/roleManagement.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 class UserService {
-  // Register User
+  // Register User (no change needed)
   async registerUser(userData) {
     try {
       const { name, email, password, role } = userData;
@@ -40,39 +41,51 @@ class UserService {
       throw error;
     }
   }
-  // Login User
+
+  // Login User (updated to include permissions)
   async loginUser(email, password) {
     try {
+      // 1️⃣ Find user + populate role
       const user = await User.findOne({ email }).populate("role");
-      if (!user) {
-        throw new Error("Invalid credentials");
-      }
+      if (!user) throw new Error("Invalid credentials");
 
+      // 2️⃣ Check password
       const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-        throw new Error("Invalid credentials");
-      }
+      if (!isPasswordValid) throw new Error("Invalid credentials");
 
-      const userResponse = user.toObject();
-      delete userResponse.password;
-
-      //  Check status
+      // 3️⃣ Check account status
       if (user.status === "inactive") {
-        return res.status(401).json({
-          success: false,
-          message: "Your account is deactivated. Contact admin.",
-        });
+        throw new Error("Your account is deactivated. Contact admin.");
       }
 
+      // 4️⃣ Get permissions for user's role
+      const rolePermissions = await RolePermission.findOne({
+        roleId: user.role._id,
+      }).populate("permissionIds", "permissions");
+
+      // Flatten permissions from multiple permissionIds
+      const allPermissions = rolePermissions
+        ? rolePermissions.permissionIds.flatMap((p) => p.permissions)
+        : [];
+
+      // 5️⃣ Generate JWT
       const token = jwt.sign(
         {
           userId: user._id,
           email: user.email,
           roleIdentifier: user.role.identifier,
+          roleUpdatedAt: user.roleUpdatedAt,
         },
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
+
+      // 6️⃣ Prepare user response (remove password, add permissions)
+      const userResponse = user.toObject();
+      delete userResponse.password;
+
+      userResponse.role = user.role;
+      userResponse.permissions = allPermissions;
 
       return { userResponse, token };
     } catch (error) {
